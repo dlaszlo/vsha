@@ -37,7 +37,7 @@ class Mqtt {
         client.publish(topic, payload.toByteArray(), qos, retained)
     }
 
-    fun subscribe(): ConcurrentLinkedQueue<Message> {
+    fun connect(): ConcurrentLinkedQueue<Message> {
 
         val options = MqttConnectOptions()
         options.isCleanSession = false
@@ -51,7 +51,15 @@ class Mqtt {
         client.setCallback(object : MqttCallback {
 
             override fun connectionLost(cause: Throwable) {
-                logger.error("A kapcsolat megszakadt az MQTT kiszolgálóval", cause)
+                if (cause is MqttException) {
+                    logger.error(
+                        "A kapcsolat megszakadt az MQTT kiszolgálóval: {}, ({})",
+                        cause.message,
+                        cause.reasonCode
+                    )
+                } else {
+                    logger.error("A kapcsolat megszakadt az MQTT kiszolgálóval", cause)
+                }
             }
 
             override fun messageArrived(topic: String, message: MqttMessage) {
@@ -70,6 +78,10 @@ class Mqtt {
         client.subscribe("#", qos)
 
         return queue
+    }
+
+    fun reconnect() {
+        client.reconnect()
     }
 
     companion object {

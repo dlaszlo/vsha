@@ -1,0 +1,9 @@
+
+# application.properties template
+
+mqtt.qos = 0
+mqtt.broker = tcp://x.x.x.x:1883
+mqtt.clientId = xxxx
+mqtt.username = xxxx
+mqtt.password = xxxx
+mqtt.keepAliveInterval = 30

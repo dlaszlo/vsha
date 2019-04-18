@@ -37,8 +37,6 @@ open class HomeAutomation : CommandLineRunner {
 
         while (true) {
             try {
-                mqtt.publish("proba", "proba", false)
-
                 var delay = true
 
                 if (!queue.isEmpty()) {

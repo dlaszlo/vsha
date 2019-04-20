@@ -80,7 +80,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             allow = { callerDeviceId ->
                 turnOnDevice == callerDeviceId
             }
-            handler = { callerDevice ->
+            handler = {
                 logger.info("kikapcsolás")
                 turnOnDevice = null
                 lastTurnOff = currentTime()

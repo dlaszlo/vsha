@@ -39,15 +39,11 @@ class SmsService {
                 }
             }
             if (response.isSuccessful) {
-                logger.info(response.message())
-                logger.info(response.toString())
-                logger.info(response.body()?.string())
+                logger.info("code: {}, message: {}, answer: {}", response.code(), response.message(), response.body()?.string())
             }
             else
             {
-                logger.error(response.message())
-                logger.error(response.toString())
-                logger.error(response.body()?.string())
+                logger.error("code: {}, message: {}, answer: {}", response.code(), response.message(), response.body()?.string())
             }
         }
     }

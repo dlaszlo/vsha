@@ -26,14 +26,14 @@ open class HomeAutomation : CommandLineRunner {
 
         val queue = mqtt.connect()
 
-        val deviceList = context.getBeansOfType(AbstractDeviceConfig::class.java).values
-
-        for (device in deviceList) {
-            device.device.logger = LoggerFactory.getLogger(device.javaClass)
-            if (device.device.initialize != null) {
-                device.device.initialize!!.invoke()
-            }
+        val deviceMap = context.getBeansOfType(AbstractDeviceConfig::class.java)
+        for (deviceEntry in deviceMap) {
+            deviceEntry.value.device.deviceId = deviceEntry.key
+            deviceEntry.value.device.logger = LoggerFactory.getLogger(deviceEntry.value.javaClass)
+            deviceEntry.value.device.initialize()
         }
+
+        val deviceList = deviceMap.values
 
         while (true) {
             try {
@@ -60,14 +60,14 @@ open class HomeAutomation : CommandLineRunner {
                                     try {
                                         val pl = JsonPath.parse(message.payload).read(route.jsonPath) as String
                                         if (route.payload == null || route.payload.equals(pl, true)) {
-                                            route.handler!!.invoke(pl)
+                                            route.handler(pl)
                                         }
                                     } catch (e: PathNotFoundException) {
                                         //
                                     }
                                 } else {
                                     if (route.payload == null || route.payload.equals(message.payload, true))
-                                        route.handler!!.invoke(message.payload)
+                                        route.handler(message.payload)
                                 }
                             }
                         }

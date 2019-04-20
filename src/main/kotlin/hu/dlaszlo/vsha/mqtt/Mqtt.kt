@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 @Component
 class Mqtt {
-    private val logger = LoggerFactory.getLogger(Mqtt::class.java)
 
     @Value("\${mqtt.qos}")
     private var qos: Int = 0

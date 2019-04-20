@@ -48,8 +48,10 @@ abstract class AbstractDeviceConfig {
     fun actionNow(deviceId: String, actionId: String) {
         var found = false
         for (scheduler in schedulerList) {
-            if (scheduler.deviceId == deviceId
+            if (scheduler.callerDeviceId == device.deviceId
+                && scheduler.deviceId == deviceId
                 && scheduler.action.id == actionId
+                && scheduler.scheduleType == ScheduleType.Immediate
             ) {
                 found = true
                 break
@@ -57,18 +59,19 @@ abstract class AbstractDeviceConfig {
         }
         if (!found) {
             val action = getAction(deviceId, actionId)
-            val scheduler = Scheduler(deviceId, ScheduleType.Immediate, null, null, action)
+            val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.Immediate, null, null, action)
             schedulerList.add(scheduler)
         }
     }
 
 
-    fun actionTimeout(deviceId: String, actionId: String, timeout: Int) {
+    fun actionTimeout(deviceId: String, actionId: String, timeout: Long) {
 
         val iterator = schedulerList.iterator()
         while (iterator.hasNext()) {
             val scheduler = iterator.next()
-            if (scheduler.deviceId == deviceId
+            if (scheduler.callerDeviceId == device.deviceId
+                && scheduler.deviceId == deviceId
                 && scheduler.action.id == actionId
                 && scheduler.scheduleType == ScheduleType.Timeout
             ) {
@@ -77,14 +80,15 @@ abstract class AbstractDeviceConfig {
         }
 
         val action = getAction(deviceId, actionId)
-        val scheduler = Scheduler(deviceId, ScheduleType.Timeout, timeout, null, action)
+        val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.Timeout, timeout, null, action)
         schedulerList.add(scheduler)
     }
 
-    fun actionFixedRate(deviceId: String, actionId: String, timeout: Int) {
+    fun actionFixedRate(deviceId: String, actionId: String, timeout: Long) {
         var found = false
         for (scheduler in schedulerList) {
-            if (scheduler.deviceId == deviceId
+            if (scheduler.callerDeviceId == device.deviceId
+                && scheduler.deviceId == deviceId
                 && scheduler.action.id == actionId
                 && scheduler.scheduleType == ScheduleType.FixedRate
             ) {
@@ -94,7 +98,7 @@ abstract class AbstractDeviceConfig {
         }
         if (!found) {
             val action = getAction(deviceId, actionId)
-            val scheduler = Scheduler(deviceId, ScheduleType.FixedRate, timeout, null, action)
+            val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.FixedRate, timeout, null, action)
             schedulerList.add(scheduler)
         }
     }
@@ -102,7 +106,8 @@ abstract class AbstractDeviceConfig {
     fun actionCron(deviceId: String, actionId: String, cronDefinition: String) {
         var found = false
         for (scheduler in schedulerList) {
-            if (scheduler.deviceId == deviceId
+            if (scheduler.callerDeviceId == device.deviceId
+                && scheduler.deviceId == deviceId
                 && scheduler.action.id == actionId
                 && scheduler.cronDefinition == cronDefinition
                 && scheduler.scheduleType == ScheduleType.CronScheduler
@@ -113,10 +118,10 @@ abstract class AbstractDeviceConfig {
         }
         if (!found) {
             val action = getAction(deviceId, actionId)
-            val scheduler = Scheduler(deviceId, ScheduleType.CronScheduler, null, cronDefinition, action)
+            val scheduler =
+                Scheduler(device.deviceId, deviceId, ScheduleType.CronScheduler, null, cronDefinition, action)
             schedulerList.add(scheduler)
         }
     }
-
 
 }

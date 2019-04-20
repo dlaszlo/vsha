@@ -5,9 +5,10 @@ import org.springframework.scheduling.support.CronSequenceGenerator
 import java.util.*
 
 class Scheduler(
+    val callerDeviceId: String,
     val deviceId: String,
     val scheduleType: ScheduleType,
-    var timeout: Int?,
+    var timeout: Long?,
     val cronDefinition: String?,
     val action: Action
 ) {
@@ -36,24 +37,32 @@ class Scheduler(
     fun action(): Boolean {
         var remove = false
         if (scheduleType == ScheduleType.Immediate) {
-            (action.handler!!)()
+            if (action.allow(callerDeviceId)) {
+                action.handler(callerDeviceId)
+            }
             remove = true
         } else if (scheduleType == ScheduleType.Timeout) {
             if (nextRun!! <= System.currentTimeMillis()) {
-                action.handler!!.invoke()
+                if (action.allow(callerDeviceId)) {
+                    action.handler(callerDeviceId)
+                }
                 remove = true
             }
         } else if (scheduleType == ScheduleType.FixedRate) {
             if (nextRun!! <= System.currentTimeMillis()) {
                 nextRun = nextRun!! + timeout!!
-                action.handler!!.invoke()
+                if (action.allow(callerDeviceId)) {
+                    action.handler(callerDeviceId)
+                }
             }
         } else if (scheduleType == ScheduleType.CronScheduler) {
             if (nextRun!! <= System.currentTimeMillis()) {
                 val currentDate = cronSequenceGenerator!!.next(previousDate!!)
                 nextRun = currentDate.time
                 previousDate = currentDate
-                action.handler!!.invoke()
+                if (action.allow(callerDeviceId)) {
+                    action.handler(callerDeviceId)
+                }
                 logger.info("deviceId: {}, actionId: {}, nextRun = {}", deviceId, action.id, Date(nextRun!!), Date())
             }
         }

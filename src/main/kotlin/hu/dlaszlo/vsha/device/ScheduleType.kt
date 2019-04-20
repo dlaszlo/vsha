@@ -1,7 +1,6 @@
 package hu.dlaszlo.vsha.device
 
-enum class ScheduleType
-{
+enum class ScheduleType {
     Immediate,
     Timeout,
     FixedRate,

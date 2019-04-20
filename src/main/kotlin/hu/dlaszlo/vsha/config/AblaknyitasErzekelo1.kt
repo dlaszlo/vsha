@@ -1,23 +1,23 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import hu.dlaszlo.vsha.device.Device
 import org.springframework.stereotype.Component
-import java.time.LocalTime
 
-@Component("mozgaserzekelo1")
-open class Mozgaserzekelo1 : AbstractDeviceConfig() {
+@Component("ablaknyitaserzekelo1")
+open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
 
-    override var device = device {
+    override var device: Device = device {
 
-        mqttName = "rfbridge1"
-        name = "Folyosó mozgásérzékelő ($mqttName)"
+        mqttName = "rfbridge2"
+        name = "Konyha ablaknyitás érzékelő ($mqttName)"
 
         route {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("mozgaserzekelo1", "getState")
+                actionNow("ablaknyitaserzekelo1", "getState")
             }
         }
 
@@ -31,15 +31,22 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
 
         route {
             topic = "tele/$mqttName/RESULT"
-            payload = "EC27FE"
+            payload = "E1860A"
             jsonPath = "$.RfReceived.Data"
             handler = {
-                logger.info("mozgás észlelve")
-                val hour = LocalTime.now().hour
-                if (hour >= 20 || hour < 6) {
-                    actionNow("kapcsolo2", "powerOn")
-                    actionTimeout("kapcsolo2", "powerOff", seconds(30))
-                }
+                logger.info("ablak kinyitva")
+                actionNow("ventilator1", "powerOn")
+                actionTimeout("ventilator1", "powerOff", minutes(5))
+            }
+        }
+
+        route {
+            topic = "tele/$mqttName/RESULT"
+            payload = "E1860E"
+            jsonPath = "$.RfReceived.Data"
+            handler = {
+                logger.info("ablak becsukva")
+                actionNow("ventilator1", "powerOff")
             }
         }
 
@@ -52,4 +59,5 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
         }
 
     }
+
 }

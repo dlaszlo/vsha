@@ -9,7 +9,7 @@ class Device {
     var mqttName: String? = null
     var name: String? = null
     var initialize: () -> Unit = {}
-    val routeList = mutableListOf<Route>()
+    val subscribeList = mutableListOf<Subscribe>()
     val actionList = mutableListOf<Action>()
 
     fun currentTime(): Long {

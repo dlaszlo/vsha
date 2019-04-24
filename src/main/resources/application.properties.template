@@ -12,3 +12,9 @@ sms.api.username = xxxx
 sms.api.password = xxxx
 sms.api.from = +3670xxxxxxx
 sms.api.to = +3670xxxxxxx, +3670xxxxxxx
+
+spring.influx.database = xxxx
+spring.influx.retentionPolicy = xxxx
+spring.influx.url = http://x.x.x.x:8086
+spring.influx.user = xxxx
+spring.influx.password = xxxx

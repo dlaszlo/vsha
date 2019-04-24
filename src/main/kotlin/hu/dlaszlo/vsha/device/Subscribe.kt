@@ -1,6 +1,6 @@
 package hu.dlaszlo.vsha.device
 
-class Route {
+class Subscribe {
     var topic: String? = null
     var payload: String? = null
     var jsonPath: String? = null

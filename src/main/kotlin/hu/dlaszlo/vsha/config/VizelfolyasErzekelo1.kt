@@ -19,7 +19,7 @@ open class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
 
         var lastSms = 0L
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -28,7 +28,7 @@ open class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -36,7 +36,7 @@ open class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/RESULT"
             payload = "330312"
             jsonPath = "$.RfReceived.Data"

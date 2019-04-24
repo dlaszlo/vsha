@@ -12,7 +12,7 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
         mqttName = "rfbridge2"
         name = "Konyha ablaknyitás érzékelő ($mqttName)"
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -21,7 +21,7 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -29,7 +29,7 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/RESULT"
             payload = "E1860A"
             jsonPath = "$.RfReceived.Data"
@@ -40,7 +40,7 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/RESULT"
             payload = "E1860E"
             jsonPath = "$.RfReceived.Data"

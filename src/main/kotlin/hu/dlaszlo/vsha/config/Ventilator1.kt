@@ -19,7 +19,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             actionCron("ventilator1", "powerOff", "0 5 * * * *")
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -28,7 +28,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -36,7 +36,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "ON"
             jsonPath = "$.POWER"
@@ -45,7 +45,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "OFF"
             jsonPath = "$.POWER"

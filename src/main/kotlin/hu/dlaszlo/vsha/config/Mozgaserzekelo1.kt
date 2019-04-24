@@ -12,7 +12,7 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
         mqttName = "rfbridge1"
         name = "Folyosó mozgásérzékelő ($mqttName)"
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -21,7 +21,7 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -29,7 +29,7 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/RESULT"
             payload = "EC27FE"
             jsonPath = "$.RfReceived.Data"

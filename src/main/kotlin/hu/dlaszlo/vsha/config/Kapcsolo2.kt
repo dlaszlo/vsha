@@ -11,7 +11,7 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
         mqttName = "kapcsolo2"
         name = "Folyosó lámpakapcsoló ($mqttName)"
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -20,7 +20,7 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -28,7 +28,7 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "ON"
             jsonPath = "$.POWER"
@@ -37,7 +37,7 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "OFF"
             jsonPath = "$.POWER"

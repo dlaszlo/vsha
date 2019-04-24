@@ -1,8 +1,15 @@
 package hu.dlaszlo.vsha.device
 
+import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.mqtt.Mqtt
+import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
+import java.lang.Exception
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlin.math.ln
 
 abstract class AbstractDeviceConfig {
 
@@ -11,6 +18,9 @@ abstract class AbstractDeviceConfig {
 
     @Autowired
     private lateinit var applicationContext: ApplicationContext
+
+    @Autowired(required = false)
+    lateinit var influxDB: InfluxDB
 
     abstract var device: Device
 
@@ -26,8 +36,8 @@ abstract class AbstractDeviceConfig {
         this.initialize = init
     }
 
-    fun Device.route(route: Route.() -> Unit) {
-        routeList.add(Route().apply(route))
+    fun Device.subscribe(subscribe: Subscribe.() -> Unit) {
+        subscribeList.add(Subscribe().apply(subscribe))
     }
 
     fun Device.action(action: Action.() -> Unit) {
@@ -44,6 +54,36 @@ abstract class AbstractDeviceConfig {
         }
         return ret!!
     }
+
+    inline fun <reified T> jsonValue(payload: String, jsonPath: String): T? {
+        var pl: String? = null
+        try {
+            pl = (JsonPath.parse(payload).read(jsonPath) as Any).toString()
+        } catch (e: PathNotFoundException) {
+            //
+        }
+        return when (T::class) {
+            String::class -> pl as T
+            Byte::class -> pl?.toByte() as T
+            Int::class -> pl?.toInt() as T
+            Long::class -> pl?.toLong() as T
+            Float::class -> pl?.toFloat() as T
+            Double::class -> pl?.toDouble() as T
+            BigDecimal::class -> pl?.toBigDecimal() as T
+            BigInteger::class -> pl?.toBigInteger() as T
+            Boolean::class -> pl?.toBoolean() as T
+            else -> throw Exception("Unhandled return type")
+        }
+    }
+
+    fun calculateDewPoint(relativeHumidity: Double, temperature: Double): Double {
+        val m = 17.62
+        val tn = 243.12
+        val t1 = ln(relativeHumidity / 100)
+        val t2 = (m * temperature) / (tn + temperature)
+        return tn * (t1 + t2) / (m - (t1 + t2))
+    }
+
 
     fun actionNow(deviceId: String, actionId: String) {
         var found = false

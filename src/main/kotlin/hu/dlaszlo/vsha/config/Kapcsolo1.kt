@@ -11,7 +11,7 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
         mqttName = "kapcsolo1"
         name = "Nappali lámpakapcsoló ($mqttName)"
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
@@ -20,7 +20,7 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Offline"
             handler = {
@@ -28,16 +28,17 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "ON"
             jsonPath = "$.POWER"
             handler = {
                 logger.info("bekapcsolt")
+                actionTimeout("kapcsolo1", "powerOff", minutes(5))
             }
         }
 
-        route {
+        subscribe {
             topic = "stat/$mqttName/RESULT"
             payload = "OFF"
             jsonPath = "$.POWER"
@@ -46,7 +47,7 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             }
         }
 
-        route {
+        subscribe {
             topic = "cmnd/kapcsolo1topic/POWER"
             payload = "TOGGLE"
             handler = {

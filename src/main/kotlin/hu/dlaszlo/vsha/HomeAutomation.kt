@@ -5,12 +5,16 @@ import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.mqtt.Mqtt
 import org.eclipse.paho.client.mqttv3.MqttException
+import org.influxdb.InfluxDB
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.ApplicationContext
+import org.springframework.boot.Banner
+import org.springframework.boot.SpringApplication
 
 
 @SpringBootApplication
@@ -22,7 +26,21 @@ open class HomeAutomation : CommandLineRunner {
     @Autowired
     lateinit var context: ApplicationContext
 
+    @Autowired(required = false)
+    var influxDB: InfluxDB? = null
+
+    @Value("\${spring.influx.database:}")
+    var database: String? = null
+
+    @Value("\${spring.influx.retentionPolicy:}")
+    var retentionPolicy: String? = null
+
     override fun run(vararg args: String?) {
+
+        if (influxDB != null) {
+            influxDB!!.setDatabase(database)
+            influxDB!!.setRetentionPolicy(retentionPolicy)
+        }
 
         val queue = mqtt.connect()
 
@@ -52,22 +70,22 @@ open class HomeAutomation : CommandLineRunner {
                     )
 
                     for (device in deviceList) {
-                        for (route in device.device.routeList) {
-                            if (route.topic == null
-                                || route.topic.equals(message.topic, true)
+                        for (subscribe in device.device.subscribeList) {
+                            if (subscribe.topic == null
+                                || subscribe.topic.equals(message.topic, true)
                             ) {
-                                if (route.jsonPath != null) {
+                                if (subscribe.jsonPath != null) {
                                     try {
-                                        val pl = JsonPath.parse(message.payload).read(route.jsonPath) as String
-                                        if (route.payload == null || route.payload.equals(pl, true)) {
-                                            route.handler(pl)
+                                        val pl = JsonPath.parse(message.payload).read(subscribe.jsonPath) as String
+                                        if (subscribe.payload == null || subscribe.payload.equals(pl, true)) {
+                                            subscribe.handler(pl)
                                         }
                                     } catch (e: PathNotFoundException) {
                                         //
                                     }
                                 } else {
-                                    if (route.payload == null || route.payload.equals(message.payload, true))
-                                        route.handler(message.payload)
+                                    if (subscribe.payload == null || subscribe.payload.equals(message.payload, true))
+                                        subscribe.handler(message.payload)
                                 }
                             }
                         }
@@ -99,13 +117,22 @@ open class HomeAutomation : CommandLineRunner {
             }
         }
     }
-
-    companion object {
-        val logger = LoggerFactory.getLogger(HomeAutomation::class.java)!!
-    }
-
 }
+
+val logger = LoggerFactory.getLogger(HomeAutomation::class.java)!!
 
 fun main(args: Array<String>) {
-    runApplication<HomeAutomation>(*args)
+
+    logger.info("")
+    logger.info("  _  _                   _       _                  _   _                    ")
+    logger.info(" | || |___ _ __  ___    /_\\ _  _| |_ ___ _ __  __ _| |_(_)___ _ _           ")
+    logger.info(" | __ / _ \\ '  \\/ -_)  / _ \\ || |  _/ _ \\ '  \\/ _` |  _| / _ \\ ' \\    ")
+    logger.info(" |_||_\\___/_|_|_\\___| /_/ \\_\\_,_|\\__\\___/_|_|_\\__,_|\\__|_\\___/_||_| ")
+    logger.info("                                                        version 1.0")
+    logger.info("")
+
+    val app = SpringApplication(HomeAutomation::class.java)
+    app.setBannerMode(Banner.Mode.OFF)
+    app.run(*args)
 }
+

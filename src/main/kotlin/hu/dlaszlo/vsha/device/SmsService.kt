@@ -1,49 +1,46 @@
 package hu.dlaszlo.vsha.device
 
-import io.github.rybalkinsd.kohttp.dsl.httpGet
-import io.github.rybalkinsd.kohttp.ext.url
-import okhttp3.Response
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 @Component
 class SmsService {
 
-    @Value("\${sms.api.url}")
-    private lateinit var urlParam: String
+    @Value("\${sms.working.dir}")
+    private lateinit var workingDir: String
 
-    @Value("\${sms.api.username}")
-    private lateinit var username: String
+    @Value("\${sms.command}")
+    private lateinit var smsCommand: String
 
-    @Value("\${sms.api.password}")
-    private lateinit var password: String
-
-    @Value("\${sms.api.from}")
-    private lateinit var from: String
-
-    @Value("\${sms.api.to}")
-    private lateinit var to: String
+    @Value("\${sms.to}")
+    private lateinit var toPhoneNumber: String
 
     fun sendSms(text: String) {
-        val toArr = to.split(",").toTypedArray()
+        val toArr = toPhoneNumber.split(",").toTypedArray()
         for (t in toArr) {
-            val response: Response = httpGet {
-                url(urlParam)
-                param {
-                    "username" to username
-                    "password" to password
-                    "from" to from
-                    "to" to t
-                    "text" to text
-                }
+            val commandParts = smsCommand
+                .replace("%%PHONE_NUMBER%%", t)
+                .replace("%%TEXT%%", text)
+                .split("\\s".toRegex())
+
+            val proc = ProcessBuilder(*commandParts.toTypedArray())
+                .directory(File(workingDir))
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+
+            proc.waitFor(10, TimeUnit.MINUTES)
+
+            if (proc.errorStream.available() > 0) {
+                val err = proc.errorStream.bufferedReader().readText()
+                logger.error("{}", err)
             }
-            if (response.isSuccessful) {
-                logger.info("code: {}, message: {}, answer: {}", response.code(), response.message(), response.body()?.string())
-            }
-            else
-            {
-                logger.error("code: {}, message: {}, answer: {}", response.code(), response.message(), response.body()?.string())
+            if (proc.inputStream.available() > 0) {
+                val out = proc.inputStream.bufferedReader().readText()
+                logger.error("{}", out)
             }
         }
     }

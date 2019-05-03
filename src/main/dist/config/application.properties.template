@@ -7,11 +7,10 @@ mqtt.clientId = xxxx
 mqtt.username = xxxx
 mqtt.password = xxxx
 mqtt.keepAliveInterval = 30
-sms.api.url = https://www.voipblazer.com/myaccount/sendsms.php
-sms.api.username = xxxx
-sms.api.password = xxxx
-sms.api.from = +3670xxxxxxx
-sms.api.to = +3670xxxxxxx, +3670xxxxxxx
+
+sms.working.dir = /home/xxxx
+sms.command =  /usr/bin/gammu-smsd-inject TEXT %%PHONE_NUMBER%% -text %%MESSAGE%%
+sms.to = +3670xxxxxxx, +3670xxxxxxx
 
 spring.influx.database = xxxx
 spring.influx.retentionPolicy = xxxx

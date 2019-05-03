@@ -18,8 +18,8 @@ class SmsService {
 
             val commandParts = arrayOf(
                 "/usr/bin/gammu-smsd-inject",
-                "TEXT", t,
-                "-text", "\"$text\""
+                "TEXT", t.trim(),
+                "-text", text
             )
 
             val proc = ProcessBuilder(*commandParts)
@@ -32,11 +32,11 @@ class SmsService {
 
             if (proc.errorStream.available() > 0) {
                 val err = proc.errorStream.bufferedReader().readText()
-                logger.error("{}", err)
+                logger.warn("{}", err)
             }
             if (proc.inputStream.available() > 0) {
                 val out = proc.inputStream.bufferedReader().readText()
-                logger.error("{}", out)
+                logger.info("{}", out)
             }
         }
     }

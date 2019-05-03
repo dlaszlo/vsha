@@ -9,25 +9,21 @@ import java.util.concurrent.TimeUnit
 @Component
 class SmsService {
 
-    @Value("\${sms.working.dir}")
-    private lateinit var workingDir: String
-
-    @Value("\${sms.command}")
-    private lateinit var smsCommand: String
-
     @Value("\${sms.to}")
     private lateinit var toPhoneNumber: String
 
     fun sendSms(text: String) {
         val toArr = toPhoneNumber.split(",").toTypedArray()
         for (t in toArr) {
-            val commandParts = smsCommand
-                .replace("%%PHONE_NUMBER%%", t)
-                .replace("%%TEXT%%", text)
-                .split("\\s".toRegex())
 
-            val proc = ProcessBuilder(*commandParts.toTypedArray())
-                .directory(File(workingDir))
+            val commandParts = arrayOf(
+                "/usr/bin/gammu-smsd-inject",
+                "TEXT", t,
+                "-text", "\"$text\""
+            )
+
+            val proc = ProcessBuilder(*commandParts)
+                .directory(File(System.getProperty("user.dir")))
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
                 .redirectError(ProcessBuilder.Redirect.PIPE)
                 .start()

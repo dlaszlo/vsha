@@ -1,22 +1,25 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("kapcsolo2")
 open class Kapcsolo2 : AbstractDeviceConfig() {
 
-    override var device = device {
+    val mqttName = "kapcsolo2"
+    val name = "Folyosó lámpakapcsoló ($mqttName)"
 
-        mqttName = "kapcsolo2"
-        name = "Folyosó lámpakapcsoló ($mqttName)"
+    override var device = device {
 
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("$mqttName", "getState")
+                actionNow<Kapcsolo2>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -46,29 +49,26 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
             }
         }
 
-        action {
-            id = "getState"
-            handler = {
-                logger.info("státusz lekérdezése")
-                publish("cmnd/$mqttName/state", "", false)
-            }
-        }
-
-        action {
-            id = "powerOn"
-            handler = {
-                logger.info("bekapcsolás")
-                publish("cmnd/$mqttName/power", "ON", false)
-            }
-        }
-
-        action {
-            id = "powerOff"
-            handler = {
-                logger.info("kikapcsolás")
-                publish("cmnd/$mqttName/power", "OFF", false)
-            }
-        }
     }
+
+    fun getState() {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    fun powerOn() {
+        logger.info("bekapcsolás")
+        publish("cmnd/$mqttName/power", "ON", false)
+    }
+
+    fun powerOff() {
+        logger.info("kikapcsolás")
+        publish("cmnd/$mqttName/power", "OFF", false)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(Kapcsolo2::class.java)!!
+    }
+
 
 }

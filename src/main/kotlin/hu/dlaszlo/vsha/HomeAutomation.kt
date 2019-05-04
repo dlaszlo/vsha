@@ -9,12 +9,11 @@ import org.influxdb.InfluxDB
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.CommandLineRunner
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
-import org.springframework.context.ApplicationContext
 import org.springframework.boot.Banner
+import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.ApplicationContext
 
 
 @SpringBootApplication
@@ -37,6 +36,8 @@ open class HomeAutomation : CommandLineRunner {
 
     override fun run(vararg args: String?) {
 
+        banner()
+
         if (influxDB != null) {
             influxDB!!.setDatabase(database)
             influxDB!!.setRetentionPolicy(retentionPolicy)
@@ -47,7 +48,6 @@ open class HomeAutomation : CommandLineRunner {
         val deviceMap = context.getBeansOfType(AbstractDeviceConfig::class.java)
         for (deviceEntry in deviceMap) {
             deviceEntry.value.device.deviceId = deviceEntry.key
-            deviceEntry.value.device.logger = LoggerFactory.getLogger(deviceEntry.value.javaClass)
             deviceEntry.value.device.initialize()
         }
 
@@ -96,7 +96,7 @@ open class HomeAutomation : CommandLineRunner {
                     val iterator = device.schedulerList.iterator()
                     while (iterator.hasNext()) {
                         val scheduler = iterator.next()
-                        if (scheduler.action()) {
+                        if (scheduler.runAction()) {
                             iterator.remove()
                         }
                     }
@@ -117,20 +117,21 @@ open class HomeAutomation : CommandLineRunner {
             }
         }
     }
+
+    fun banner() {
+        logger.info("")
+        logger.info("  _  _                   _       _                  _   _                    ")
+        logger.info(" | || |___ _ __  ___    /_\\ _  _| |_ ___ _ __  __ _| |_(_)___ _ _           ")
+        logger.info(" | __ / _ \\ '  \\/ -_)  / _ \\ || |  _/ _ \\ '  \\/ _` |  _| / _ \\ ' \\    ")
+        logger.info(" |_||_\\___/_|_|_\\___| /_/ \\_\\_,_|\\__\\___/_|_|_\\__,_|\\__|_\\___/_||_| ")
+        logger.info("                                                        version 1.0")
+        logger.info("")
+    }
 }
 
 val logger = LoggerFactory.getLogger(HomeAutomation::class.java)!!
 
 fun main(args: Array<String>) {
-
-    logger.info("")
-    logger.info("  _  _                   _       _                  _   _                    ")
-    logger.info(" | || |___ _ __  ___    /_\\ _  _| |_ ___ _ __  __ _| |_(_)___ _ _           ")
-    logger.info(" | __ / _ \\ '  \\/ -_)  / _ \\ || |  _/ _ \\ '  \\/ _` |  _| / _ \\ ' \\    ")
-    logger.info(" |_||_\\___/_|_|_\\___| /_/ \\_\\_,_|\\__\\___/_|_|_\\__,_|\\__|_\\___/_||_| ")
-    logger.info("                                                        version 1.0")
-    logger.info("")
-
     val app = SpringApplication(HomeAutomation::class.java)
     app.setBannerMode(Banner.Mode.OFF)
     app.run(*args)

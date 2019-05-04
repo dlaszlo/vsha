@@ -4,13 +4,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.support.CronSequenceGenerator
 import java.util.*
 
-class Scheduler(
-    val callerDeviceId: String,
-    val deviceId: String,
+class Scheduler<T : AbstractDeviceConfig>(
+    val device: T,
+    val actionId: String,
+    val action: (t: T) -> Unit,
     val scheduleType: ScheduleType,
     var timeout: Long?,
-    val cronDefinition: String?,
-    val action: Action
+    val cronDefinition: String?
 ) {
 
     private var nextRun: Long? = null
@@ -30,40 +30,32 @@ class Scheduler(
             val currentDate = cronSequenceGenerator!!.next(previousDate!!)
             nextRun = currentDate.time
             previousDate = currentDate
-            logger.info("deviceId: {}, actionId: {}, nextRun = {}", deviceId, action.id, Date(nextRun!!), Date())
+            logger.info("device = {}, actionId = {}, nextRun = {}", device.javaClass.canonicalName, actionId, Date(nextRun!!), Date())
         }
     }
 
-    fun action(): Boolean {
+    fun runAction(): Boolean {
         var remove = false
         if (scheduleType == ScheduleType.Immediate) {
-            if (action.allow(callerDeviceId)) {
-                action.handler(callerDeviceId)
-            }
+            action(device)
             remove = true
         } else if (scheduleType == ScheduleType.Timeout) {
             if (nextRun!! <= System.currentTimeMillis()) {
-                if (action.allow(callerDeviceId)) {
-                    action.handler(callerDeviceId)
-                }
+                action(device)
                 remove = true
             }
         } else if (scheduleType == ScheduleType.FixedRate) {
             if (nextRun!! <= System.currentTimeMillis()) {
                 nextRun = nextRun!! + timeout!!
-                if (action.allow(callerDeviceId)) {
-                    action.handler(callerDeviceId)
-                }
+                action(device)
             }
         } else if (scheduleType == ScheduleType.CronScheduler) {
             if (nextRun!! <= System.currentTimeMillis()) {
                 val currentDate = cronSequenceGenerator!!.next(previousDate!!)
                 nextRun = currentDate.time
                 previousDate = currentDate
-                if (action.allow(callerDeviceId)) {
-                    action.handler(callerDeviceId)
-                }
-                logger.info("deviceId: {}, actionId: {}, nextRun = {}", deviceId, action.id, Date(nextRun!!), Date())
+                action(device)
+                logger.info("device = {}, actionId = {}, nextRun = {}", device.javaClass.canonicalName, actionId, Date(nextRun!!), Date())
             }
         }
         return remove

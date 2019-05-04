@@ -3,6 +3,7 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
 import hu.dlaszlo.vsha.device.SmsService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -12,19 +13,21 @@ open class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
     @Autowired
     lateinit var smsService: SmsService
 
+    val mqttName = "rfbridge2"
+    val name = "Vízelfolyás érzékelő - mosógép ($mqttName)"
+    var lastSms = 0L
+
     override var device: Device = device {
 
-        mqttName = "rfbridge2"
-        name = "Vízelfolyás érzékelő - mosógép ($mqttName)"
-
-        var lastSms = 0L
 
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("vizelfolyaserzekelo2", "getState")
+                actionNow<VizelfolyasErzekelo2>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -42,28 +45,27 @@ open class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Riasztás! Vízelfolyás érzékelő (mosógép).")
-                actionNow("vizelfolyaserzekelo2", "sendSms")
+                actionNow<VizelfolyasErzekelo2>("sendSms") { device ->
+                    device.sendSms()
+                }
             }
         }
-
-        action {
-            id = "getState"
-            handler = {
-                logger.info("státusz lekérdezése")
-                publish("cmnd/$mqttName/state", "", false)
-            }
-        }
-
-        action {
-            id = "sendSms"
-            allow = { currentTime() - lastSms > minutes(15) }
-            handler = {
-                logger.info("SMS küldése")
-                lastSms = currentTime()
-                smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosógép).")
-            }
-        }
-
     }
+
+    fun getState() {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    fun sendSms() {
+        logger.info("SMS küldése")
+        lastSms = currentTime()
+        smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosógép).")
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(VizelfolyasErzekelo2::class.java)!!
+    }
+
 
 }

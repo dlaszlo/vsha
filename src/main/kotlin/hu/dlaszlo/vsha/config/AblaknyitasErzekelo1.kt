@@ -2,22 +2,25 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("ablaknyitaserzekelo1")
 open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
 
-    override var device: Device = device {
+    val mqttName = "rfbridge2"
+    val name = "Konyha ablaknyitás érzékelő ($mqttName)"
 
-        mqttName = "rfbridge2"
-        name = "Konyha ablaknyitás érzékelő ($mqttName)"
+    override var device: Device = device {
 
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("ablaknyitaserzekelo1", "getState")
+                actionNow<AblaknyitasErzekelo1>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -35,8 +38,15 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("ablak kinyitva")
-                actionNow("ventilator1", "powerOn")
-                actionTimeout("ventilator1", "powerOff", minutes(5))
+
+                actionNow<Ventilator1>("powerOn") { device ->
+                    device.powerOn("ablaknyitaserzekelo1")
+                }
+
+                actionTimeout<Ventilator1>("powerOff", minutes(5)) { device ->
+                    device.powerOff("ablaknyitaserzekelo1")
+                }
+
             }
         }
 
@@ -46,18 +56,20 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("ablak becsukva")
-                actionNow("ventilator1", "powerOff")
-            }
-        }
-
-        action {
-            id = "getState"
-            handler = {
-                logger.info("státusz lekérdezése")
-                publish("cmnd/$mqttName/state", "", false)
+                actionNow<Ventilator1>("powerOff") { device ->
+                    device.powerOff("ablaknyitaserzekelo1")
+                }
             }
         }
 
     }
 
+    fun getState() {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(AblaknyitasErzekelo1::class.java)!!
+    }
 }

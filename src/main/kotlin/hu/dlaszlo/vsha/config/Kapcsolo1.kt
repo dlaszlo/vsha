@@ -1,22 +1,23 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("kapcsolo1")
 open class Kapcsolo1 : AbstractDeviceConfig() {
+    val mqttName = "kapcsolo1"
+    val name = "Nappali lámpakapcsoló ($mqttName)"
 
     override var device = device {
-
-        mqttName = "kapcsolo1"
-        name = "Nappali lámpakapcsoló ($mqttName)"
-
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("$mqttName", "getState")
+                actionNow<Kapcsolo1>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -34,7 +35,9 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             jsonPath = "$.POWER"
             handler = {
                 logger.info("bekapcsolt")
-                actionTimeout("kapcsolo1", "powerOff", minutes(5))
+                actionTimeout<Kapcsolo1>("kapcsolo1", minutes(5)) { device ->
+                    device.powerOff()
+                }
             }
         }
 
@@ -52,33 +55,31 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             payload = "TOGGLE"
             handler = {
                 logger.info("dupla érintéssel a nappali állólámpa kapcsolása")
-                actionNow("konnektor1", "toggle")
+                actionNow<Konnektor1>("konnektor1") { device ->
+                    device.toggle()
+                }
             }
         }
-
-        action {
-            id = "getState"
-            handler = {
-                logger.info("státusz lekérdezése")
-                publish("cmnd/$mqttName/state", "", false)
-            }
-        }
-
-        action {
-            id = "powerOn"
-            handler = {
-                logger.info("bekapcsolás")
-                publish("cmnd/$mqttName/power", "ON", false)
-            }
-        }
-
-        action {
-            id = "powerOff"
-            handler = {
-                logger.info("kikapcsolás")
-                publish("cmnd/$mqttName/power", "OFF", false)
-            }
-        }
-
     }
+
+    fun getState() {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    fun powerOn() {
+        logger.info("bekapcsolás")
+        publish("cmnd/$mqttName/power", "ON", false)
+    }
+
+    fun powerOff() {
+        logger.info("kikapcsolás")
+        publish("cmnd/$mqttName/power", "OFF", false)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(Kapcsolo1::class.java)!!
+    }
+
+
 }

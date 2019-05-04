@@ -1,23 +1,26 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalTime
 
 @Component("mozgaserzekelo1")
 open class Mozgaserzekelo1 : AbstractDeviceConfig() {
 
-    override var device = device {
+    val mqttName = "rfbridge1"
+    val name = "Folyosó mozgásérzékelő ($mqttName)"
 
-        mqttName = "rfbridge1"
-        name = "Folyosó mozgásérzékelő ($mqttName)"
+    override var device = device {
 
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow("mozgaserzekelo1", "getState")
+                actionNow<Mozgaserzekelo1>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -37,19 +40,25 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
                 logger.info("mozgás észlelve")
                 val hour = LocalTime.now().hour
                 if (hour >= 20 || hour < 6) {
-                    actionNow("kapcsolo2", "powerOn")
-                    actionTimeout("kapcsolo2", "powerOff", seconds(30))
+                    actionNow<Kapcsolo2>("powerOn") { device ->
+                        device.powerOn()
+                    }
+                    actionTimeout<Kapcsolo2>("powerOff", seconds(30)) { device ->
+                        device.powerOff()
+                    }
                 }
             }
         }
-
-        action {
-            id = "getState"
-            handler = {
-                logger.info("státusz lekérdezése")
-                publish("cmnd/$mqttName/state", "", false)
-            }
-        }
-
     }
+
+    fun getState() {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(Mozgaserzekelo1::class.java)!!
+    }
+
+
 }

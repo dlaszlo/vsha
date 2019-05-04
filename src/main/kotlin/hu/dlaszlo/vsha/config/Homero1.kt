@@ -2,6 +2,7 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.influxdb.dto.Point
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
@@ -9,11 +10,10 @@ import java.util.concurrent.TimeUnit
 open class Homero1 : AbstractDeviceConfig() {
 
     val calibrateRoomTemperature = -1.3
+    val mqttName = "homero1"
+    val name = "Konyhai hőmérő ($mqttName)"
 
     override var device = device {
-
-        mqttName = "homero1"
-        name = "Konyhai hőmérő ($mqttName)"
 
         subscribe {
             topic = "$mqttName/adat"
@@ -28,8 +28,10 @@ open class Homero1 : AbstractDeviceConfig() {
                 val relativeHumidity: Double = jsonValue(payload, "$.h")!!
                 val dewPointTemperature = calculateDewPoint(relativeHumidity, roomTemperature)
 
-                logger.info("Fal hőmérséklet: {}, Konyha hőmérséklet: {}, Légköri nyomás: {}, Becsült magasság: {}, Relatív páratartalom: {}, Harmatponti hőmérséklet: {}",
-                    wallTemperature, roomTemperature, pressure, estimatedAltitude, relativeHumidity, dewPointTemperature)
+                logger.info(
+                    "Fal hőmérséklet: {}, Konyha hőmérséklet: {}, Légköri nyomás: {}, Becsült magasság: {}, Relatív páratartalom: {}, Harmatponti hőmérséklet: {}",
+                    wallTemperature, roomTemperature, pressure, estimatedAltitude, relativeHumidity, dewPointTemperature
+                )
 
                 influxDB.write(
                     Point.measurement("homero1")
@@ -46,4 +48,10 @@ open class Homero1 : AbstractDeviceConfig() {
         }
 
     }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(Homero1::class.java)!!
+    }
+
+
 }

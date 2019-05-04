@@ -6,25 +6,25 @@ import hu.dlaszlo.vsha.mqtt.Mqtt
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
-import java.lang.Exception
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.concurrent.TimeUnit
 import kotlin.math.ln
 
 abstract class AbstractDeviceConfig {
 
     @Autowired
-    private lateinit var mqtt: Mqtt
+    lateinit var mqtt: Mqtt
 
     @Autowired
-    private lateinit var applicationContext: ApplicationContext
+    lateinit var applicationContext: ApplicationContext
 
     @Autowired(required = false)
     lateinit var influxDB: InfluxDB
 
     abstract var device: Device
 
-    val schedulerList = mutableListOf<Scheduler>()
+    val schedulerList = mutableListOf<Scheduler<out AbstractDeviceConfig>>()
 
     protected fun publish(topic: String, payload: String, retained: Boolean) {
         mqtt.publish(topic, payload, retained)
@@ -38,21 +38,6 @@ abstract class AbstractDeviceConfig {
 
     fun Device.subscribe(subscribe: Subscribe.() -> Unit) {
         subscribeList.add(Subscribe().apply(subscribe))
-    }
-
-    fun Device.action(action: Action.() -> Unit) {
-        actionList.add(Action().apply(action))
-    }
-
-    private fun getAction(deviceId: String, actionId: String): Action {
-        val deviceConfig: AbstractDeviceConfig = applicationContext.getBean(deviceId, AbstractDeviceConfig::class.java)
-        var ret: Action? = null
-        for (action in deviceConfig.device.actionList) {
-            if (actionId.equals(action.id, true)) {
-                ret = action
-            }
-        }
-        return ret!!
     }
 
     inline fun <reified T> jsonValue(payload: String, jsonPath: String): T? {
@@ -84,82 +69,88 @@ abstract class AbstractDeviceConfig {
         return tn * (t1 + t2) / (m - (t1 + t2))
     }
 
+    fun currentTime(): Long {
+        return System.currentTimeMillis()
+    }
 
-    fun actionNow(deviceId: String, actionId: String) {
+    fun minutes(minutes: Long): Long {
+        return TimeUnit.MINUTES.toMillis(minutes)
+    }
+
+    fun seconds(seconds: Long): Long {
+        return TimeUnit.SECONDS.toMillis(seconds)
+    }
+
+
+
+    inline fun <reified T : AbstractDeviceConfig> actionNow(actionId: String, noinline action: (t: T) -> Unit) {
         var found = false
+        val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
-            if (scheduler.callerDeviceId == device.deviceId
-                && scheduler.deviceId == deviceId
-                && scheduler.action.id == actionId
-                && scheduler.scheduleType == ScheduleType.Immediate
+            if (scheduler.scheduleType == ScheduleType.Immediate
+                && scheduler.device == device
+                && scheduler.actionId == actionId
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val action = getAction(deviceId, actionId)
-            val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.Immediate, null, null, action)
+            val scheduler = Scheduler(device, actionId, action, ScheduleType.Immediate, null, null)
             schedulerList.add(scheduler)
         }
     }
 
+    inline fun <reified T : AbstractDeviceConfig> actionTimeout(actionId: String, timeout: Long, noinline action: (t: T) -> Unit) {
 
-    fun actionTimeout(deviceId: String, actionId: String, timeout: Long) {
-
+        val device = applicationContext.getBean(T::class.java)
         val iterator = schedulerList.iterator()
         while (iterator.hasNext()) {
             val scheduler = iterator.next()
-            if (scheduler.callerDeviceId == device.deviceId
-                && scheduler.deviceId == deviceId
-                && scheduler.action.id == actionId
-                && scheduler.scheduleType == ScheduleType.Timeout
+            if (scheduler.scheduleType == ScheduleType.Timeout
+                && scheduler.device == device
+                && scheduler.actionId == actionId
             ) {
                 iterator.remove()
             }
         }
-
-        val action = getAction(deviceId, actionId)
-        val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.Timeout, timeout, null, action)
+        val scheduler = Scheduler(device, actionId, action, ScheduleType.Timeout, timeout, null)
         schedulerList.add(scheduler)
     }
 
-    fun actionFixedRate(deviceId: String, actionId: String, timeout: Long) {
+    inline fun <reified T : AbstractDeviceConfig> actionFixedRate(actionId: String, timeout: Long, noinline action: (t: T) -> Unit) {
         var found = false
+        val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
-            if (scheduler.callerDeviceId == device.deviceId
-                && scheduler.deviceId == deviceId
-                && scheduler.action.id == actionId
-                && scheduler.scheduleType == ScheduleType.FixedRate
+            if (scheduler.scheduleType == ScheduleType.FixedRate
+                && scheduler.device == device
+                && scheduler.actionId == actionId
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val action = getAction(deviceId, actionId)
-            val scheduler = Scheduler(device.deviceId, deviceId, ScheduleType.FixedRate, timeout, null, action)
+            val scheduler = Scheduler(device, actionId, action, ScheduleType.FixedRate, timeout, null)
             schedulerList.add(scheduler)
         }
     }
 
-    fun actionCron(deviceId: String, actionId: String, cronDefinition: String) {
+    inline fun <reified T : AbstractDeviceConfig> actionCron(actionId: String, cronDefinition: String, noinline action: (t: T) -> Unit) {
         var found = false
+        val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
-            if (scheduler.callerDeviceId == device.deviceId
-                && scheduler.deviceId == deviceId
-                && scheduler.action.id == actionId
+            if (scheduler.scheduleType == ScheduleType.CronScheduler
+                && scheduler.device == device
                 && scheduler.cronDefinition == cronDefinition
-                && scheduler.scheduleType == ScheduleType.CronScheduler
+                && scheduler.actionId == actionId
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val action = getAction(deviceId, actionId)
-            val scheduler =
-                Scheduler(device.deviceId, deviceId, ScheduleType.CronScheduler, null, cronDefinition, action)
+            val scheduler = Scheduler(device, actionId, action, ScheduleType.CronScheduler, null, cronDefinition)
             schedulerList.add(scheduler)
         }
     }

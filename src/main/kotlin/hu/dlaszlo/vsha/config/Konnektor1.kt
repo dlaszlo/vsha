@@ -1,22 +1,25 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("konnektor1")
 open class Konnektor1 : AbstractDeviceConfig() {
 
-    override var device = device {
+    val mqttName = "konnektor1"
+    val name = "Nappali állólámpa ($mqttName)"
 
-        mqttName = "konnektor1"
-        name = "Nappali állólámpa ($mqttName)"
+    override var device = device {
 
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("A $name online")
-                actionNow("$mqttName", "getState")
+                actionNow<Konnektor1>("getState") { device ->
+                    device.getState()
+                }
             }
         }
 
@@ -45,38 +48,31 @@ open class Konnektor1 : AbstractDeviceConfig() {
                 logger.info("A $name kikapcsolt")
             }
         }
-
-        action {
-            id = "getState"
-            handler = {
-                logger.info("Státusz lekérdezése: $name")
-                publish("cmnd/$mqttName/state", "", false)
-            }
-        }
-
-        action {
-            id = "powerOn"
-            handler = {
-                logger.info("A $name bekapcsolása")
-                publish("cmnd/$mqttName/power", "ON", false)
-            }
-        }
-
-        action {
-            id = "powerOff"
-            handler = {
-                logger.info("A $name kikapcsolása")
-                publish("cmnd/$mqttName/power", "OFF", false)
-            }
-        }
-
-        action {
-            id = "toggle"
-            handler = {
-                logger.info("A $name átkapcsolása")
-                publish("cmnd/$mqttName/power", "TOGGLE", false)
-            }
-        }
-
     }
+
+    fun getState() {
+        logger.info("Státusz lekérdezése: $name")
+        publish("cmnd/$mqttName/state", "", false)
+    }
+
+    fun powerOn() {
+        logger.info("A $name bekapcsolása")
+        publish("cmnd/$mqttName/power", "ON", false)
+    }
+
+    fun powerOff() {
+        logger.info("A $name kikapcsolása")
+        publish("cmnd/$mqttName/power", "OFF", false)
+    }
+
+    fun toggle() {
+        logger.info("A $name átkapcsolása")
+        publish("cmnd/$mqttName/power", "TOGGLE", false)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(Konnektor1::class.java)!!
+    }
+
+
 }

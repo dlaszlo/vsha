@@ -36,7 +36,7 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "org.springframework.boot:spring-boot-starter"
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     api "org.apache.commons:commons-lang3"
     api "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$paho_mqtt__version"
     api "com.jayway.jsonpath:json-path"

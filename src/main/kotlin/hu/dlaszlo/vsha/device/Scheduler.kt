@@ -6,7 +6,6 @@ import java.util.*
 
 class Scheduler<T : AbstractDeviceConfig>(
     val device: T,
-    val actionId: String,
     val action: (t: T) -> Unit,
     val scheduleType: ScheduleType,
     var timeout: Long?,
@@ -30,7 +29,7 @@ class Scheduler<T : AbstractDeviceConfig>(
             val currentDate = cronSequenceGenerator!!.next(previousDate!!)
             nextRun = currentDate.time
             previousDate = currentDate
-            logger.info("device = {}, actionId = {}, nextRun = {}", device.javaClass.canonicalName, actionId, Date(nextRun!!), Date())
+            logger.info("device = {}, action = {}, nextRun = {}", device.javaClass.canonicalName, action, Date(nextRun!!), Date())
         }
     }
 
@@ -55,7 +54,7 @@ class Scheduler<T : AbstractDeviceConfig>(
                 nextRun = currentDate.time
                 previousDate = currentDate
                 action(device)
-                logger.info("device = {}, actionId = {}, nextRun = {}", device.javaClass.canonicalName, actionId, Date(nextRun!!), Date())
+                logger.info("device = {}, action = {}, nextRun = {}", device.javaClass.canonicalName, action, Date(nextRun!!), Date())
             }
         }
         return remove

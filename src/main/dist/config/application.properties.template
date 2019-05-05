@@ -14,4 +14,6 @@ spring.influx.database = xxxx
 spring.influx.retentionPolicy = xxxx
 spring.influx.url = http://x.x.x.x:8086
 spring.influx.user = xxxx
-spring.influx.password = xxxx
+spring.influx.password =
+
+beeper.enabled = true

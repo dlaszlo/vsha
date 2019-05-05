@@ -8,13 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("vizelfolyaserzekelo2")
-open class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
+class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var smsService: SmsService
 
-    val mqttName = "rfbridge2"
-    val name = "Vízelfolyás érzékelő - mosógép ($mqttName)"
+    final val mqttName = "rfbridge2"
+    final val name = "Vízelfolyás érzékelő - mosógép ($mqttName)"
+
     var lastSms = 0L
 
     override var device: Device = device {
@@ -25,9 +26,7 @@ open class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<VizelfolyasErzekelo2>("getState") { device ->
-                    device.getState()
-                }
+                action(VizelfolyasErzekelo2::getState)
             }
         }
 
@@ -45,9 +44,7 @@ open class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Riasztás! Vízelfolyás érzékelő (mosógép).")
-                actionNow<VizelfolyasErzekelo2>("sendSms") { device ->
-                    device.sendSms()
-                }
+                action(VizelfolyasErzekelo2::sendSms)
             }
         }
     }

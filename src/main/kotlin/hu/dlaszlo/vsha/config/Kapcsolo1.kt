@@ -1,13 +1,24 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import hu.dlaszlo.vsha.device.GpioService
+import hu.dlaszlo.vsha.device.SmsService
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("kapcsolo1")
-open class Kapcsolo1 : AbstractDeviceConfig() {
-    val mqttName = "kapcsolo1"
-    val name = "Nappali lámpakapcsoló ($mqttName)"
+class Kapcsolo1 : AbstractDeviceConfig() {
+
+    @Autowired
+    lateinit var gpioService: GpioService
+
+    final val mqttName = "kapcsolo1"
+    final val name = "Nappali lámpakapcsoló ($mqttName)"
+
+    var longpressPowerOn = false
+    var stateOnline = false
+    var statePowerOn = false
 
     override var device = device {
         subscribe {
@@ -15,9 +26,8 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<Kapcsolo1>("getState") { device ->
-                    device.getState()
-                }
+                stateOnline = true
+                action(Kapcsolo1::getState)
             }
         }
 
@@ -26,6 +36,7 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             payload = "Offline"
             handler = {
                 logger.info("offline")
+                stateOnline = false
             }
         }
 
@@ -35,8 +46,9 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             jsonPath = "$.POWER"
             handler = {
                 logger.info("bekapcsolt")
-                actionTimeout<Kapcsolo1>("kapcsolo1", minutes(5)) { device ->
-                    device.powerOff()
+                statePowerOn = true
+                if (!longpressPowerOn) {
+                    actionTimeout(Kapcsolo1::powerOff, minutes(5))
                 }
             }
         }
@@ -47,6 +59,9 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             jsonPath = "$.POWER"
             handler = {
                 logger.info("kikapcsolt")
+                statePowerOn = false
+                longpressPowerOn = false
+                clearTimeout(Kapcsolo1::powerOff)
             }
         }
 
@@ -55,11 +70,28 @@ open class Kapcsolo1 : AbstractDeviceConfig() {
             payload = "TOGGLE"
             handler = {
                 logger.info("dupla érintéssel a nappali állólámpa kapcsolása")
-                actionNow<Konnektor1>("konnektor1") { device ->
-                    device.toggle()
+                action(Konnektor1::toggle)
+            }
+        }
+
+
+        subscribe {
+            topic = "cmnd/kapcsolo1topic/POWER"
+            payload = "HOLD"
+            handler = {
+                logger.info("hosszú érintéssel a nappali lámpa bekapcsolása")
+                clearTimeout(Kapcsolo1::powerOff)
+                longpressPowerOn = if (statePowerOn) {
+                    action(Kapcsolo1::powerOff)
+                    false
+                } else {
+                    action(Kapcsolo1::powerOn)
+                    gpioService.beep(100)
+                    true
                 }
             }
         }
+
     }
 
     fun getState() {

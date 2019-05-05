@@ -5,25 +5,19 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("ventilator1")
-open class Ventilator1 : AbstractDeviceConfig() {
+class Ventilator1 : AbstractDeviceConfig() {
 
-    val mqttName = "ventilator1"
-    val name = "Konyha ventilator ($mqttName)"
-    var turnOnDevice: String? = null
+    final val mqttName = "ventilator1"
+    final val name = "Konyha ventilator ($mqttName)"
+
     var lastTurnOff = 0L
+    var scheduledTurnedOn = false
 
     override var device = device {
 
         initialize {
-
-            actionCron<Ventilator1>("powerOn", "0 0 * * * *") { device ->
-                device.powerOn("ventilator1")
-            }
-
-            actionCron<Ventilator1>("powerOff", "0 5 * * * *") { device ->
-                device.powerOff("ventilator1")
-            }
-
+            actionCron(Ventilator1::scheduledPowerOn, "0 0 * * * *")
+            actionCron(Ventilator1::scheduledPowerOff, "0 5 * * * *")
         }
 
         subscribe {
@@ -31,9 +25,7 @@ open class Ventilator1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<Ventilator1>("getStatus") { device ->
-                    device.getState()
-                }
+                action(Ventilator1::getState)
             }
         }
 
@@ -69,23 +61,33 @@ open class Ventilator1 : AbstractDeviceConfig() {
         publish("cmnd/$mqttName/state", "", false)
     }
 
-    fun powerOn(callerDeviceId: String) {
-        if (currentTime() - lastTurnOff > minutes(5)
-            && (turnOnDevice == null || callerDeviceId == "ventilator1")
-        ) {
+    fun powerOn() {
+        if (!scheduledTurnedOn && currentTime() - lastTurnOff > minutes(5)) {
             logger.info("bekapcsolás")
-            turnOnDevice = callerDeviceId
             publish("cmnd/$mqttName/power", "ON", false)
         }
     }
 
-    fun powerOff(callerDeviceId: String) {
-        if (turnOnDevice == callerDeviceId) {
+    fun powerOff() {
+        if (!scheduledTurnedOn) {
             logger.info("kikapcsolás")
-            turnOnDevice = null
             lastTurnOff = currentTime()
             publish("cmnd/$mqttName/power", "OFF", false)
         }
+    }
+
+    fun scheduledPowerOn() {
+        if (currentTime() - lastTurnOff > minutes(5)) {
+            scheduledTurnedOn = true
+            logger.info("időzített bekapcsolás")
+            publish("cmnd/$mqttName/power", "ON", false)
+        }
+    }
+
+    fun scheduledPowerOff() {
+        logger.info("időzített kikapcsolás")
+        lastTurnOff = currentTime()
+        publish("cmnd/$mqttName/power", "OFF", false)
     }
 
     companion object {

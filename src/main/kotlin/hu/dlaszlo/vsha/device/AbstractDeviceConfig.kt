@@ -81,76 +81,79 @@ abstract class AbstractDeviceConfig {
         return TimeUnit.SECONDS.toMillis(seconds)
     }
 
-
-
-    inline fun <reified T : AbstractDeviceConfig> actionNow(actionId: String, noinline action: (t: T) -> Unit) {
+    inline fun <reified T : AbstractDeviceConfig> action(noinline action: (t: T) -> Unit) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
             if (scheduler.scheduleType == ScheduleType.Immediate
                 && scheduler.device == device
-                && scheduler.actionId == actionId
+                && scheduler.action == action
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val scheduler = Scheduler(device, actionId, action, ScheduleType.Immediate, null, null)
+            val scheduler = Scheduler(device, action, ScheduleType.Immediate, null, null)
             schedulerList.add(scheduler)
         }
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionTimeout(actionId: String, timeout: Long, noinline action: (t: T) -> Unit) {
 
+    inline fun <reified T : AbstractDeviceConfig> clearTimeout(noinline action: (t: T) -> Unit) {
         val device = applicationContext.getBean(T::class.java)
         val iterator = schedulerList.iterator()
         while (iterator.hasNext()) {
             val scheduler = iterator.next()
             if (scheduler.scheduleType == ScheduleType.Timeout
                 && scheduler.device == device
-                && scheduler.actionId == actionId
+                && scheduler.action == action
             ) {
                 iterator.remove()
             }
         }
-        val scheduler = Scheduler(device, actionId, action, ScheduleType.Timeout, timeout, null)
+    }
+
+    inline fun <reified T : AbstractDeviceConfig> actionTimeout(noinline action: (t: T) -> Unit, timeout: Long) {
+        clearTimeout(action)
+        val device = applicationContext.getBean(T::class.java)
+        val scheduler = Scheduler(device, action, ScheduleType.Timeout, timeout, null)
         schedulerList.add(scheduler)
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionFixedRate(actionId: String, timeout: Long, noinline action: (t: T) -> Unit) {
+    inline fun <reified T : AbstractDeviceConfig> actionFixedRate(noinline action: (t: T) -> Unit, timeout: Long) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
             if (scheduler.scheduleType == ScheduleType.FixedRate
                 && scheduler.device == device
-                && scheduler.actionId == actionId
+                && scheduler.action == action
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val scheduler = Scheduler(device, actionId, action, ScheduleType.FixedRate, timeout, null)
+            val scheduler = Scheduler(device, action, ScheduleType.FixedRate, timeout, null)
             schedulerList.add(scheduler)
         }
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionCron(actionId: String, cronDefinition: String, noinline action: (t: T) -> Unit) {
+    inline fun <reified T : AbstractDeviceConfig> actionCron(noinline action: (t: T) -> Unit, cronDefinition: String) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
             if (scheduler.scheduleType == ScheduleType.CronScheduler
                 && scheduler.device == device
                 && scheduler.cronDefinition == cronDefinition
-                && scheduler.actionId == actionId
+                && scheduler.action == action
             ) {
                 found = true
                 break
             }
         }
         if (!found) {
-            val scheduler = Scheduler(device, actionId, action, ScheduleType.CronScheduler, null, cronDefinition)
+            val scheduler = Scheduler(device, action, ScheduleType.CronScheduler, null, cronDefinition)
             schedulerList.add(scheduler)
         }
     }

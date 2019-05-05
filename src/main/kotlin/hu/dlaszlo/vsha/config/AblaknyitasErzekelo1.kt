@@ -6,10 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("ablaknyitaserzekelo1")
-open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
+class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
 
-    val mqttName = "rfbridge2"
-    val name = "Konyha ablaknyitás érzékelő ($mqttName)"
+    final val mqttName = "rfbridge2"
+    final val name = "Konyha ablaknyitás érzékelő ($mqttName)"
+
+    var online = false
+    var windowOpened = false
 
     override var device: Device = device {
 
@@ -18,9 +21,8 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<AblaknyitasErzekelo1>("getState") { device ->
-                    device.getState()
-                }
+                online = true
+                action(AblaknyitasErzekelo1::getState)
             }
         }
 
@@ -29,6 +31,7 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             payload = "Offline"
             handler = {
                 logger.info("offline")
+                online = false
             }
         }
 
@@ -38,15 +41,9 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("ablak kinyitva")
-
-                actionNow<Ventilator1>("powerOn") { device ->
-                    device.powerOn("ablaknyitaserzekelo1")
-                }
-
-                actionTimeout<Ventilator1>("powerOff", minutes(5)) { device ->
-                    device.powerOff("ablaknyitaserzekelo1")
-                }
-
+                windowOpened = true
+                action(Ventilator1::powerOn)
+                actionTimeout(Ventilator1::powerOff, minutes(5))
             }
         }
 
@@ -56,9 +53,8 @@ open class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("ablak becsukva")
-                actionNow<Ventilator1>("powerOff") { device ->
-                    device.powerOff("ablaknyitaserzekelo1")
-                }
+                windowOpened = false
+                action(Ventilator1::powerOff)
             }
         }
 

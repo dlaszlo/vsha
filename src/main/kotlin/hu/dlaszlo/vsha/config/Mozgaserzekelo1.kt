@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component
 import java.time.LocalTime
 
 @Component("mozgaserzekelo1")
-open class Mozgaserzekelo1 : AbstractDeviceConfig() {
+class Mozgaserzekelo1 : AbstractDeviceConfig() {
 
-    val mqttName = "rfbridge1"
-    val name = "Folyosó mozgásérzékelő ($mqttName)"
+    final val mqttName = "rfbridge1"
+    final val name = "Folyosó mozgásérzékelő ($mqttName)"
 
     override var device = device {
 
@@ -18,9 +18,7 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<Mozgaserzekelo1>("getState") { device ->
-                    device.getState()
-                }
+                action(Mozgaserzekelo1::getState)
             }
         }
 
@@ -40,12 +38,8 @@ open class Mozgaserzekelo1 : AbstractDeviceConfig() {
                 logger.info("mozgás észlelve")
                 val hour = LocalTime.now().hour
                 if (hour >= 20 || hour < 6) {
-                    actionNow<Kapcsolo2>("powerOn") { device ->
-                        device.powerOn()
-                    }
-                    actionTimeout<Kapcsolo2>("powerOff", seconds(30)) { device ->
-                        device.powerOff()
-                    }
+                    action(Kapcsolo2::powerOn)
+                    actionTimeout(Kapcsolo2::powerOff, seconds(30))
                 }
             }
         }

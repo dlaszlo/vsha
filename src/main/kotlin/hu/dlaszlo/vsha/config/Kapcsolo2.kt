@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("kapcsolo2")
-open class Kapcsolo2 : AbstractDeviceConfig() {
+class Kapcsolo2 : AbstractDeviceConfig() {
 
-    val mqttName = "kapcsolo2"
-    val name = "Folyosó lámpakapcsoló ($mqttName)"
+    final val mqttName = "kapcsolo2"
+    final val name = "Folyosó lámpakapcsoló ($mqttName)"
 
     override var device = device {
 
@@ -17,9 +17,7 @@ open class Kapcsolo2 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                actionNow<Kapcsolo2>("getState") { device ->
-                    device.getState()
-                }
+                action(Kapcsolo2::getState)
             }
         }
 

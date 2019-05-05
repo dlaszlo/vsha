@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
 @Component("homero1")
-open class Homero1 : AbstractDeviceConfig() {
+class Homero1 : AbstractDeviceConfig() {
 
-    val calibrateRoomTemperature = -1.3
-    val mqttName = "homero1"
-    val name = "Konyhai hőmérő ($mqttName)"
+    final val calibrateRoomTemperature = -1.3
+    final val mqttName = "homero1"
+    final val name = "Konyhai hőmérő ($mqttName)"
 
     override var device = device {
 

@@ -40,7 +40,7 @@ class GpioService {
     fun initialize() {
         if (beeperEnabled) {
             gpio = GpioFactory.getInstance()
-            beeper = gpio!!.provisionDigitalOutputPin(RaspiPin.GPIO_17, "Beeper", PinState.LOW)
+            beeper = gpio!!.provisionDigitalOutputPin(RaspiPin.GPIO_00, "Beeper", PinState.LOW)
             beeper!!.setShutdownOptions(true, PinState.LOW)
         }
     }

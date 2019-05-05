@@ -54,19 +54,26 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-mainClassName = "hu.dlaszlo.vsha.HomeAutomationKt"
-
 jar {
     exclude "application.properties"
     exclude "logback.xml"
 }
 
-applicationDefaultJvmArgs =
-        [
-                "-Dlogging.config=MY_APP_HOME/config/logback.xml",
-                "-Dspring.config.location=MY_APP_HOME/config/application.properties",
-                "-Dlog.directory=MY_APP_HOME/log"
-        ]
+bootJar {
+    mainClassName = "hu.dlaszlo.vsha.HomeAutomationKt"
+}
+
+application {
+    mainClassName = "org.springframework.boot.loader.JarLauncher"
+
+    applicationDefaultJvmArgs =
+            [
+                    "-Dlogging.config=MY_APP_HOME/config/logback.xml",
+                    "-Dspring.config.location=MY_APP_HOME/config/application.properties",
+                    "-Dlog.directory=MY_APP_HOME/log"
+            ]
+
+}
 
 startScripts {
     doLast {

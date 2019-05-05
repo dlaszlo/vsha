@@ -87,6 +87,7 @@ class Ventilator1 : AbstractDeviceConfig() {
     fun scheduledPowerOff() {
         logger.info("időzített kikapcsolás")
         lastTurnOff = currentTime()
+        scheduledTurnedOn = false
         publish("cmnd/$mqttName/power", "OFF", false)
     }
 

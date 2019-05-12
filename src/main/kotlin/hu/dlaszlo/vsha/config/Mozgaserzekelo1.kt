@@ -4,6 +4,7 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalTime
+import java.util.Arrays.asList
 
 @Component("mozgaserzekelo1")
 class Mozgaserzekelo1 : AbstractDeviceConfig() {
@@ -31,7 +32,7 @@ class Mozgaserzekelo1 : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "tele/$mqttName/RESULT"
+            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
             payload = "EC27FE"
             jsonPath = "$.RfReceived.Data"
             handler = {

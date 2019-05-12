@@ -6,6 +6,7 @@ import hu.dlaszlo.vsha.device.SmsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.Arrays.asList
 
 @Component("vizelfolyaserzekelo2")
 class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
@@ -39,7 +40,7 @@ class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "tele/$mqttName/RESULT"
+            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
             payload = "540412"
             jsonPath = "$.RfReceived.Data"
             handler = {

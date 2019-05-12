@@ -4,6 +4,7 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.util.Arrays.asList
 
 @Component("ablaknyitaserzekelo1")
 class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
@@ -36,7 +37,7 @@ class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "tele/$mqttName/RESULT"
+            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
             payload = "E1860A"
             jsonPath = "$.RfReceived.Data"
             handler = {
@@ -48,7 +49,7 @@ class AblaknyitasErzekelo1 : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "tele/$mqttName/RESULT"
+            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
             payload = "E1860E"
             jsonPath = "$.RfReceived.Data"
             handler = {

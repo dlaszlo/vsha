@@ -73,8 +73,9 @@ class HomeAutomationService : Runnable {
 
                     for (device in deviceList) {
                         for (subscribe in device.device.subscribeList) {
-                            if (subscribe.topic == null
-                                || subscribe.topic.equals(message.topic, true)
+                            if (subscribe.topic == null && subscribe.topicList.isNullOrEmpty()
+                                    || subscribe.topic != null && subscribe.topic.equals(message.topic, true)
+                                    || subscribe.topicList != null && subscribe.topicList!!.any { it.equals(message.topic, true) }
                             ) {
                                 if (subscribe.jsonPath != null) {
                                     try {

@@ -39,7 +39,6 @@ class Mozgaserzekelo1 : AbstractDeviceConfig() {
                 val hour = LocalTime.now().hour
                 if (hour >= 20 || hour < 6) {
                     action(Kapcsolo2::powerOn)
-                    actionTimeout(Kapcsolo2::powerOff, seconds(30))
                 }
             }
         }

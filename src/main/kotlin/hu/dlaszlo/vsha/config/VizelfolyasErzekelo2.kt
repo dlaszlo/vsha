@@ -55,9 +55,11 @@ class VizelfolyasErzekelo2 : AbstractDeviceConfig() {
     }
 
     fun sendSms() {
-        logger.info("SMS küldése")
-        lastSms = currentTime()
-        smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosógép).")
+        if (currentTime() - lastSms > minutes(1)) {
+            logger.info("SMS küldése")
+            lastSms = currentTime()
+            smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosógép).")
+        }
     }
 
     companion object {

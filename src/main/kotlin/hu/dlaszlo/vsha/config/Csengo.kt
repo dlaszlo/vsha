@@ -7,14 +7,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("vizelfolyaserzekelo1")
-class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
+@Component("csengo")
+class Csengo : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var smsService: SmsService
 
-    final val mqttName = "rfbridge2"
-    final val name = "Vízelfolyás érzékelő - mosogatógép ($mqttName)"
+    final val mqttName = "rfbridge1"
+    final val name = "Csengő ($mqttName)"
 
     var lastSms = 0L
 
@@ -25,7 +25,7 @@ class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                action(VizelfolyasErzekelo1::getState)
+                action(Csengo::getState)
             }
         }
 
@@ -39,11 +39,11 @@ class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
 
         subscribe {
             topic = "tele/$mqttName/RESULT"
-            payload = "330312"
+            payload = "41E021"
             jsonPath = "$.RfReceived.Data"
             handler = {
-                logger.info("Riasztás! Vízelfolyás érzékelő (mosogatógép).")
-                action(VizelfolyasErzekelo1::sendSms)
+                logger.info("Csengetett valaki.")
+                action(Csengo::sendSms)
             }
         }
     }
@@ -57,12 +57,12 @@ class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
         if (currentTime() - lastSms > minutes(1)) {
             logger.info("SMS küldése")
             lastSms = currentTime()
-            smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosogatógép).")
+            smsService.sendSms("Csengetett valaki.")
         }
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(VizelfolyasErzekelo1::class.java)!!
+        val logger = LoggerFactory.getLogger(Csengo::class.java)!!
     }
 
 

@@ -2,7 +2,6 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
-import hu.dlaszlo.vsha.device.SmsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,7 +15,7 @@ class Kapcsolo1 : AbstractDeviceConfig() {
     final val mqttName = "kapcsolo1"
     final val name = "Nappali lámpakapcsoló ($mqttName)"
 
-    var longpressPowerOn = false
+    var longPressPowerOn = false
     var stateOnline = false
     var statePowerOn = false
 
@@ -47,7 +46,7 @@ class Kapcsolo1 : AbstractDeviceConfig() {
             handler = {
                 logger.info("bekapcsolt")
                 statePowerOn = true
-                if (!longpressPowerOn) {
+                if (!longPressPowerOn) {
                     actionTimeout(Kapcsolo1::powerOff, minutes(5))
                 }
             }
@@ -60,7 +59,7 @@ class Kapcsolo1 : AbstractDeviceConfig() {
             handler = {
                 logger.info("kikapcsolt")
                 statePowerOn = false
-                longpressPowerOn = false
+                longPressPowerOn = false
                 clearTimeout(Kapcsolo1::powerOff)
             }
         }
@@ -81,7 +80,7 @@ class Kapcsolo1 : AbstractDeviceConfig() {
             handler = {
                 logger.info("hosszú érintéssel a nappali lámpa bekapcsolása")
                 clearTimeout(Kapcsolo1::powerOff)
-                longpressPowerOn = if (statePowerOn) {
+                longPressPowerOn = if (statePowerOn) {
                     action(Kapcsolo1::powerOff)
                     false
                 } else {

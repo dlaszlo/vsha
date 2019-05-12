@@ -6,6 +6,7 @@ import hu.dlaszlo.vsha.device.SmsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.Arrays.asList
 
 @Component("csengo")
 class Csengo : AbstractDeviceConfig() {
@@ -38,7 +39,7 @@ class Csengo : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "tele/$mqttName/RESULT"
+            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
             payload = "41E021"
             jsonPath = "$.RfReceived.Data"
             handler = {

@@ -32,7 +32,7 @@ class ErzekeloAblaknyitasKonyha : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
+            topicList = asList("tele/$mqttName1/RESULT", "tele/$mqttName2/RESULT")
             payload = "E1860E"
             jsonPath = "$.RfReceived.Data"
             handler = {

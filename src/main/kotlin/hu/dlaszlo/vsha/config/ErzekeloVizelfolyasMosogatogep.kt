@@ -8,50 +8,29 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.Arrays.asList
 
-@Component("vizelfolyaserzekelo1")
-class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
+@Component
+class ErzekeloVizelfolyasMosogatogep : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var smsService: SmsService
 
-    final val mqttName = "rfbridge2"
-    final val name = "Vízelfolyás érzékelő - mosogatógép ($mqttName)"
+    final val mqttName1 = "konyha-rfbridge"
+    final val mqttName2 = "nappali-rfbridge"
+    final val name = "Vízelfolyás érzékelő - mosogatógép ($mqttName1)"
 
     var lastSms = 0L
 
     override var device: Device = device {
 
         subscribe {
-            topic = "tele/$mqttName/LWT"
-            payload = "Online"
-            handler = {
-                logger.info("online")
-                action(VizelfolyasErzekelo1::getState)
-            }
-        }
-
-        subscribe {
-            topic = "tele/$mqttName/LWT"
-            payload = "Offline"
-            handler = {
-                logger.info("offline")
-            }
-        }
-
-        subscribe {
-            topicList = asList("tele/rfbridge1/RESULT", "tele/rfbridge2/RESULT")
+            topicList = asList("tele/$mqttName1/RESULT", "tele/$mqttName2/RESULT")
             payload = "330312"
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Riasztás! Vízelfolyás érzékelő (mosogatógép).")
-                action(VizelfolyasErzekelo1::sendSms)
+                action(ErzekeloVizelfolyasMosogatogep::sendSms)
             }
         }
-    }
-
-    fun getState() {
-        logger.info("státusz lekérdezése")
-        publish("cmnd/$mqttName/state", "", false)
     }
 
     fun sendSms() {
@@ -63,7 +42,7 @@ class VizelfolyasErzekelo1 : AbstractDeviceConfig() {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(VizelfolyasErzekelo1::class.java)!!
+        val logger = LoggerFactory.getLogger(ErzekeloVizelfolyasMosogatogep::class.java)!!
     }
 
 

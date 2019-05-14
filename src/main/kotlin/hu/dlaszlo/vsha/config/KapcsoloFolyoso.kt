@@ -6,27 +6,28 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsolo1")
-class Kapcsolo1 : AbstractDeviceConfig() {
+@Component
+class KapcsoloFolyoso : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    final val mqttName = "kapcsolo1"
-    final val name = "Nappali lámpakapcsoló ($mqttName)"
+    final val mqttName = "folyoso-kapcsolo"
+    final val name = "Folyosó lámpakapcsoló ($mqttName)"
 
     var longPressPowerOn = false
     var stateOnline = false
     var statePowerOn = false
 
     override var device = device {
+
         subscribe {
             topic = "tele/$mqttName/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
                 stateOnline = true
-                action(Kapcsolo1::getState)
+                action(KapcsoloFolyoso::getState)
             }
         }
 
@@ -47,7 +48,7 @@ class Kapcsolo1 : AbstractDeviceConfig() {
                 logger.info("bekapcsolt")
                 statePowerOn = true
                 if (!longPressPowerOn) {
-                    actionTimeout(Kapcsolo1::powerOff, minutes(5))
+                    actionTimeout(KapcsoloFolyoso::powerOff, seconds(30))
                 }
             }
         }
@@ -60,31 +61,30 @@ class Kapcsolo1 : AbstractDeviceConfig() {
                 logger.info("kikapcsolt")
                 statePowerOn = false
                 longPressPowerOn = false
-                clearTimeout(Kapcsolo1::powerOff)
+                clearTimeout(KapcsoloFolyoso::powerOff)
             }
         }
 
         subscribe {
-            topic = "cmnd/kapcsolo1topic/POWER"
+            topic = "cmnd/folyoso-kapcsolo-topic/POWER"
             payload = "TOGGLE"
             handler = {
-                logger.info("dupla érintéssel a nappali állólámpa kapcsolása")
-                action(Konnektor1::toggle)
+                logger.info("dupla érintéssel a konyha kapcsolók kapcsolása")
+                action(KapcsoloKonyha::toggle)
             }
         }
 
-
         subscribe {
-            topic = "cmnd/kapcsolo1topic/POWER"
+            topic = "cmnd/folyoso-kapcsolo-topic/POWER"
             payload = "HOLD"
             handler = {
-                logger.info("hosszú érintéssel a nappali lámpa bekapcsolása")
-                clearTimeout(Kapcsolo1::powerOff)
+                logger.info("hosszú érintéssel a folyosó lámpa bekapcsolása")
+                clearTimeout(KapcsoloFolyoso::powerOff)
                 longPressPowerOn = if (statePowerOn) {
-                    action(Kapcsolo1::powerOff)
+                    action(KapcsoloFolyoso::powerOff)
                     false
                 } else {
-                    action(Kapcsolo1::powerOn)
+                    action(KapcsoloFolyoso::powerOn)
                     gpioService.beep(100)
                     true
                 }
@@ -108,8 +108,13 @@ class Kapcsolo1 : AbstractDeviceConfig() {
         publish("cmnd/$mqttName/power", "OFF", false)
     }
 
+    fun toggle() {
+        KonnektorNappali.logger.info("A $name átkapcsolása")
+        publish("cmnd/$mqttName/power", "TOGGLE", false)
+    }
+
     companion object {
-        val logger = LoggerFactory.getLogger(Kapcsolo1::class.java)!!
+        val logger = LoggerFactory.getLogger(KapcsoloFolyoso::class.java)!!
     }
 
 

@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component
 import java.util.Arrays.asList
 
 @Component
-class Csengo : AbstractDeviceConfig() {
+class ErzekeloVizelfolyasMosogep : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var smsService: SmsService
 
     final val mqttName1 = "konyha-rfbridge"
     final val mqttName2 = "nappali-rfbridge"
-    final val name = "Csengő ($mqttName1, $mqttName2)"
+    final val name = "Vízelfolyás érzékelő - mosógép ($mqttName1)"
 
     var lastSms = 0L
 
@@ -24,11 +24,11 @@ class Csengo : AbstractDeviceConfig() {
 
         subscribe {
             topicList = asList("tele/$mqttName1/RESULT", "tele/$mqttName2/RESULT")
-            payload = "41E021"
+            payload = "540412"
             jsonPath = "$.RfReceived.Data"
             handler = {
-                logger.info("Csengetett valaki.")
-                action(Csengo::sendSms)
+                logger.info("Riasztás! Vízelfolyás érzékelő (mosógép).")
+                action(ErzekeloVizelfolyasMosogep::sendSms)
             }
         }
     }
@@ -37,12 +37,12 @@ class Csengo : AbstractDeviceConfig() {
         if (currentTime() - lastSms > minutes(1)) {
             logger.info("SMS küldése")
             lastSms = currentTime()
-            smsService.sendSms("Csengetett valaki.")
+            smsService.sendSms("Riasztás! Vízelfolyás érzékelő (mosógép).")
         }
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(Csengo::class.java)!!
+        val logger = LoggerFactory.getLogger(ErzekeloVizelfolyasMosogep::class.java)!!
     }
 
 

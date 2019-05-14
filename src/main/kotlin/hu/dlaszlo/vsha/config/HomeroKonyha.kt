@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
-@Component("homero1")
-class Homero1 : AbstractDeviceConfig() {
+@Component
+class HomeroKonyha : AbstractDeviceConfig() {
 
     final val calibrateRoomTemperature = -1.3
     final val mqttName = "homero1"
@@ -50,7 +50,7 @@ class Homero1 : AbstractDeviceConfig() {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(Homero1::class.java)!!
+        val logger = LoggerFactory.getLogger(HomeroKonyha::class.java)!!
     }
 
 

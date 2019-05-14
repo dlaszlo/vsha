@@ -4,10 +4,10 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-@Component("ventilator1")
-class Ventilator1 : AbstractDeviceConfig() {
+@Component
+class VentilatorKonyha : AbstractDeviceConfig() {
 
-    final val mqttName = "ventilator1"
+    final val mqttName = "konyha-ventilator"
     final val name = "Konyha ventilator ($mqttName)"
 
     var lastTurnOff = 0L
@@ -16,8 +16,8 @@ class Ventilator1 : AbstractDeviceConfig() {
     override var device = device {
 
         initialize {
-            actionCron(Ventilator1::scheduledPowerOn, "0 0 * * * *")
-            actionCron(Ventilator1::scheduledPowerOff, "0 5 * * * *")
+            actionCron(VentilatorKonyha::scheduledPowerOn, "0 0 * * * *")
+            actionCron(VentilatorKonyha::scheduledPowerOff, "0 5 * * * *")
         }
 
         subscribe {
@@ -25,7 +25,7 @@ class Ventilator1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("online")
-                action(Ventilator1::getState)
+                action(VentilatorKonyha::getState)
             }
         }
 
@@ -62,7 +62,7 @@ class Ventilator1 : AbstractDeviceConfig() {
     }
 
     fun powerOn() {
-        if (!scheduledTurnedOn && currentTime() - lastTurnOff > minutes(5)) {
+        if (!scheduledTurnedOn && currentTime() - lastTurnOff > minutes(1)) {
             logger.info("bekapcsolás")
             publish("cmnd/$mqttName/power", "ON", false)
         }
@@ -77,7 +77,7 @@ class Ventilator1 : AbstractDeviceConfig() {
     }
 
     fun scheduledPowerOn() {
-        if (currentTime() - lastTurnOff > minutes(5)) {
+        if (currentTime() - lastTurnOff > minutes(1)) {
             scheduledTurnedOn = true
             logger.info("időzített bekapcsolás")
             publish("cmnd/$mqttName/power", "ON", false)
@@ -92,7 +92,7 @@ class Ventilator1 : AbstractDeviceConfig() {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(Ventilator1::class.java)!!
+        val logger = LoggerFactory.getLogger(VentilatorKonyha::class.java)!!
     }
 
 }

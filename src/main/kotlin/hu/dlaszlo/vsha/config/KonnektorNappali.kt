@@ -4,11 +4,11 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-@Component("konnektor1")
-class Konnektor1 : AbstractDeviceConfig() {
+@Component
+class KonnektorNappali : AbstractDeviceConfig() {
 
-    final val mqttName = "konnektor1"
-    final val name = "Nappali állólámpa ($mqttName)"
+    final val mqttName = "nappali-konnektor"
+    final val name = "Nappali konnektor ($mqttName)"
 
     override var device = device {
 
@@ -17,7 +17,7 @@ class Konnektor1 : AbstractDeviceConfig() {
             payload = "Online"
             handler = {
                 logger.info("A $name online")
-                action(Konnektor1::getState)
+                action(KonnektorNappali::getState)
             }
         }
 
@@ -69,7 +69,7 @@ class Konnektor1 : AbstractDeviceConfig() {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(Konnektor1::class.java)!!
+        val logger = LoggerFactory.getLogger(KonnektorNappali::class.java)!!
     }
 
 

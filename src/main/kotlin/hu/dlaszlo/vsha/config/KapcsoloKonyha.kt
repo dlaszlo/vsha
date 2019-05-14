@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsolo3")
-class Kapcsolo3 : AbstractDeviceConfig() {
+@Component
+class KapcsoloKonyha : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    final val mqttName = "kapcsolo3"
+    final val mqttName = "konyha-kapcsolo"
     final val name = "Konyha lámpakapcsoló ($mqttName)"
 
     var longPressPowerOn1 = false
@@ -29,7 +29,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
             handler = {
                 logger.info("online")
                 stateOnline = true
-                action(Kapcsolo3::getState)
+                action(KapcsoloKonyha::getState)
             }
         }
 
@@ -50,7 +50,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
                 logger.info("konyha lámpa bekapcsolt")
                 statePowerOn1 = true
                 if (!longPressPowerOn1) {
-                    actionTimeout(Kapcsolo3::powerOff1, minutes(30))
+                    actionTimeout(KapcsoloKonyha::powerOff1, minutes(30))
                 }
             }
         }
@@ -63,7 +63,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
                 logger.info("konyha lámpa kikapcsolt")
                 statePowerOn1 = false
                 longPressPowerOn1 = false
-                clearTimeout(Kapcsolo3::powerOff1)
+                clearTimeout(KapcsoloKonyha::powerOff1)
             }
         }
 
@@ -75,7 +75,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
                 logger.info("konyhapult lámpa bekapcsolt")
                 statePowerOn2 = true
                 if (!longPressPowerOn2) {
-                    actionTimeout(Kapcsolo3::powerOff2, minutes(30))
+                    actionTimeout(KapcsoloKonyha::powerOff2, minutes(30))
                 }
             }
         }
@@ -88,39 +88,39 @@ class Kapcsolo3 : AbstractDeviceConfig() {
                 logger.info("konyhapult lámpa kikapcsolt")
                 statePowerOn2 = false
                 longPressPowerOn2 = false
-                clearTimeout(Kapcsolo3::powerOff2)
+                clearTimeout(KapcsoloKonyha::powerOff2)
             }
         }
 
         subscribe {
-            topic = "cmnd/kapcsolo3topic/POWER1"
+            topic = "cmnd/konyha-kapcsolo-topic/POWER1"
             payload = "TOGGLE"
             handler = {
-                Kapcsolo1.logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
-                action(Kapcsolo2::toggle)
+                KapcsoloNappali.logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
+                action(KapcsoloFolyoso::toggle)
             }
         }
 
         subscribe {
-            topic = "cmnd/kapcsolo3topic/POWER2"
+            topic = "cmnd/konyha-kapcsolo-topic/POWER2"
             payload = "TOGGLE"
             handler = {
-                Kapcsolo1.logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
-                action(Kapcsolo2::toggle)
+                KapcsoloNappali.logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
+                action(KapcsoloFolyoso::toggle)
             }
         }
 
         subscribe {
-            topic = "cmnd/kapcsolo3topic/POWER1"
+            topic = "cmnd/konyha-kapcsolo-topic/POWER1"
             payload = "HOLD"
             handler = {
                 logger.info("hosszú érintéssel a konyha lámpa bekapcsolása")
-                clearTimeout(Kapcsolo3::powerOff1)
+                clearTimeout(KapcsoloKonyha::powerOff1)
                 longPressPowerOn1 = if (statePowerOn1) {
-                    action(Kapcsolo3::powerOff1)
+                    action(KapcsoloKonyha::powerOff1)
                     false
                 } else {
-                    action(Kapcsolo3::powerOn1)
+                    action(KapcsoloKonyha::powerOn1)
                     gpioService.beep(100)
                     true
                 }
@@ -128,16 +128,16 @@ class Kapcsolo3 : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topic = "cmnd/kapcsolo3topic/POWER2"
+            topic = "cmnd/konyha-kapcsolo-topic/POWER2"
             payload = "HOLD"
             handler = {
                 logger.info("hosszú érintéssel a konyhapult lámpa bekapcsolása")
-                clearTimeout(Kapcsolo3::powerOff2)
+                clearTimeout(KapcsoloKonyha::powerOff2)
                 longPressPowerOn2 = if (statePowerOn2) {
-                    action(Kapcsolo3::powerOff2)
+                    action(KapcsoloKonyha::powerOff2)
                     false
                 } else {
-                    action(Kapcsolo3::powerOn2)
+                    action(KapcsoloKonyha::powerOn2)
                     gpioService.beep(100)
                     true
                 }
@@ -172,7 +172,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
     }
 
     fun toggle() {
-        Konnektor1.logger.info("A $name átkapcsolása")
+        KonnektorNappali.logger.info("A $name átkapcsolása")
         if (statePowerOn1 || statePowerOn2)
         {
             // mindent lekapcsolunk
@@ -192,7 +192,7 @@ class Kapcsolo3 : AbstractDeviceConfig() {
 
 
     companion object {
-        val logger = LoggerFactory.getLogger(Kapcsolo3::class.java)!!
+        val logger = LoggerFactory.getLogger(KapcsoloKonyha::class.java)!!
     }
 
 

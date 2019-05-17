@@ -72,7 +72,7 @@ class VentilatorKonyha : AbstractDeviceConfig() {
         if (!scheduledTurnedOn) {
             logger.info("kikapcsolás")
             lastTurnOff = currentTime()
-            publish("cmnd/$mqttName/power", "OFF", false)
+            publish("cmnd/$mqttName/power", "OFF", true)
         }
     }
 
@@ -88,7 +88,7 @@ class VentilatorKonyha : AbstractDeviceConfig() {
         logger.info("időzített kikapcsolás")
         lastTurnOff = currentTime()
         scheduledTurnedOn = false
-        publish("cmnd/$mqttName/power", "OFF", false)
+        publish("cmnd/$mqttName/power", "OFF", true)
     }
 
     companion object {

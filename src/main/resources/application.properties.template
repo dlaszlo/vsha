@@ -17,3 +17,8 @@ spring.influx.user = xxxx
 spring.influx.password = xxxx
 
 beeper.enabled = true
+
+zenith = CIVIL
+latitude = 0.0
+longitude = 0.0
+timeZone = Europe/Budapest

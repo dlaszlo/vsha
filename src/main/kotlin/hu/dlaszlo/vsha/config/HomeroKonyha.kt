@@ -3,22 +3,14 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.influxdb.dto.Point
 import org.slf4j.LoggerFactory
-import org.springframework.hateoas.Resource
-import org.springframework.hateoas.ResourceSupport
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.TimeUnit
 
-@RestController
-@RequestMapping("homeroKonyha")
-class HomeroKonyha : AbstractDeviceConfig() {
+open class HomeroKonyha : AbstractDeviceConfig() {
 
-    class DeviceState : ResourceSupport() {
-        val mqttName: String = "homero1"
+    data class DeviceState(
+        val mqttName: String = "homero1",
         val name: String = "Konyhai hőmérő ($mqttName)"
-    }
+    )
 
     var state = DeviceState()
 
@@ -60,15 +52,7 @@ class HomeroKonyha : AbstractDeviceConfig() {
 
     }
 
-    @RequestMapping(produces = arrayOf("application/hal+json"))
-    fun getDeviceState(): Resource<DeviceState> {
-        val link1 = linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel()
-        return Resource(state, link1)
-    }
-
     companion object {
         val logger = LoggerFactory.getLogger(HomeroKonyha::class.java)!!
     }
-
-
 }

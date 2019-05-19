@@ -4,32 +4,21 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.Link
-import org.springframework.hateoas.Resource
-import org.springframework.hateoas.ResourceSupport
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
-@RequestMapping("kapcsoloKonyha")
-class KapcsoloKonyha : AbstractDeviceConfig() {
+open class KapcsoloKonyha : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    class DeviceState : ResourceSupport() {
-        val mqttName: String = "konyha-kapcsolo"
-        val name: String = "Konyha lámpakapcsoló ($mqttName)"
-        var longPressPowerOn1: Boolean = false
-        var longPressPowerOn2: Boolean = false
-        var online: Boolean = false
-        var powerOn1: Boolean = false
+    data class DeviceState(
+        val mqttName: String = "konyha-kapcsolo",
+        val name: String = "Konyha lámpakapcsoló ($mqttName)",
+        var longPressPowerOn1: Boolean = false,
+        var longPressPowerOn2: Boolean = false,
+        var online: Boolean = false,
+        var powerOn1: Boolean = false,
         var powerOn2: Boolean = false
-    }
+    )
 
     var state = DeviceState()
 
@@ -203,46 +192,6 @@ class KapcsoloKonyha : AbstractDeviceConfig() {
             publish("cmnd/${state.mqttName}/power2", "ON", false)
         }
         return true
-    }
-
-    @RequestMapping(produces = arrayOf("application/hal+json"))
-    fun getDeviceState(): Resource<DeviceState> {
-        val links = arrayListOf<Link>()
-        links.add(linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel())
-        if (state.online) {
-            if (state.powerOn1) {
-                links.add(linkTo(methodOn(this::class.java).powerOff1Rest()).withSelfRel())
-            } else {
-                links.add(linkTo(methodOn(this::class.java).powerOn1Rest()).withSelfRel())
-            }
-            if (state.powerOn2) {
-                links.add(linkTo(methodOn(this::class.java).powerOff2Rest()).withSelfRel())
-            } else {
-                links.add(linkTo(methodOn(this::class.java).powerOn2Rest()).withSelfRel())
-            }
-
-        }
-        return Resource(state, links)
-    }
-
-    @RequestMapping("/powerOn1")
-    fun powerOn1Rest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOn1(), HttpStatus.OK)
-    }
-
-    @RequestMapping("/powerOff1")
-    fun powerOff1Rest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOff1(), HttpStatus.OK)
-    }
-
-    @RequestMapping("/powerOn2")
-    fun powerOn2Rest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOn2(), HttpStatus.OK)
-    }
-
-    @RequestMapping("/powerOff2")
-    fun powerOff2Rest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOff2(), HttpStatus.OK)
     }
 
     companion object {

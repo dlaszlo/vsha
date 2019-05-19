@@ -2,19 +2,9 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
-import org.springframework.hateoas.Link
-import org.springframework.hateoas.Resource
 import org.springframework.hateoas.ResourceSupport
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
-@RequestMapping("ventilatorKonyha")
-class VentilatorKonyha : AbstractDeviceConfig() {
+open class VentilatorKonyha : AbstractDeviceConfig() {
 
     class DeviceState : ResourceSupport() {
         val mqttName: String = "konyha-ventilator"
@@ -115,30 +105,6 @@ class VentilatorKonyha : AbstractDeviceConfig() {
         state.scheduledTurnedOn = false
         publish("cmnd/${state.mqttName}/power", "OFF", true)
         return true
-    }
-
-    @RequestMapping(produces = arrayOf("application/hal+json"))
-    fun getDeviceState(): Resource<DeviceState> {
-        val links = arrayListOf<Link>()
-        links.add(linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel())
-        if (state.online) {
-            if (state.powerOn) {
-                links.add(linkTo(methodOn(this::class.java).powerOffRest()).withSelfRel())
-            } else {
-                links.add(linkTo(methodOn(this::class.java).powerOnRest()).withSelfRel())
-            }
-        }
-        return Resource(state, links)
-    }
-
-    @RequestMapping("/powerOn")
-    fun powerOnRest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOn(), HttpStatus.OK)
-    }
-
-    @RequestMapping("/powerOff")
-    fun powerOffRest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOff(), HttpStatus.OK)
     }
 
     companion object {

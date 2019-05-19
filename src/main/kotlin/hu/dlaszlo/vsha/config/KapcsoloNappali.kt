@@ -4,30 +4,19 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.Link
-import org.springframework.hateoas.Resource
-import org.springframework.hateoas.ResourceSupport
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
-@RequestMapping("kapcsoloNappali")
-class KapcsoloNappali : AbstractDeviceConfig() {
+open class KapcsoloNappali : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    class DeviceState : ResourceSupport() {
-        val mqttName: String = "nappali-kapcsolo"
-        val name: String = "Nappali lámpakapcsoló ($mqttName)"
-        var longPressPowerOn: Boolean = false
-        var online: Boolean = false
+    data class DeviceState(
+        val mqttName: String = "nappali-kapcsolo",
+        val name: String = "Nappali lámpakapcsoló ($mqttName)",
+        var longPressPowerOn: Boolean = false,
+        var online: Boolean = false,
         var powerOn: Boolean = false
-    }
+    )
 
     var state = DeviceState()
 
@@ -123,33 +112,8 @@ class KapcsoloNappali : AbstractDeviceConfig() {
         return true
     }
 
-    @RequestMapping(produces = arrayOf("application/hal+json"))
-    fun getDeviceState(): Resource<DeviceState> {
-        val links = arrayListOf<Link>()
-        links.add(linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel())
-        if (state.online) {
-            if (state.powerOn) {
-                links.add(linkTo(methodOn(this::class.java).powerOffRest()).withSelfRel())
-            } else {
-                links.add(linkTo(methodOn(this::class.java).powerOnRest()).withSelfRel())
-            }
-        }
-        return Resource(state, links)
-    }
-
-    @RequestMapping("/powerOn")
-    fun powerOnRest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOn(), HttpStatus.OK)
-    }
-
-    @RequestMapping("/powerOff")
-    fun powerOffRest(): ResponseEntity<Boolean> {
-        return ResponseEntity(powerOff(), HttpStatus.OK)
-    }
-
     companion object {
         val logger = LoggerFactory.getLogger(KapcsoloNappali::class.java)!!
     }
-
 
 }

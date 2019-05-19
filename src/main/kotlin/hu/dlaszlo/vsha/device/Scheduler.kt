@@ -6,7 +6,7 @@ import java.util.*
 
 class Scheduler<T : AbstractDeviceConfig>(
     val device: T,
-    val action: (t: T) -> Unit,
+    val action: (t: T) -> Boolean,
     val scheduleType: ScheduleType,
     var timeout: Long?,
     val cronDefinition: String?

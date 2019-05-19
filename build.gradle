@@ -5,7 +5,6 @@ buildscript {
     ext.pi4j_version = "1.2"
     ext.paho_mqtt_version = "1.2.1"
     ext.influxdb_version = "2.15"
-    ext.sunrise_sunset_calculator_version = "1.2"
 
     repositories {
         jcenter()
@@ -37,12 +36,11 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    api "org.springframework.boot:spring-boot-starter-hateoas"
     api "com.fasterxml.jackson.module:jackson-module-kotlin"
     api "org.apache.commons:commons-lang3"
     api "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$paho_mqtt_version"
     api "com.jayway.jsonpath:json-path"
-    // api "io.github.rybalkinsd:kohttp:0.8.0"
     api "org.influxdb:influxdb-java:$influxdb_version"
     api "com.pi4j:pi4j-core:$pi4j_version"
 

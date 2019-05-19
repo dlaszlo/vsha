@@ -4,63 +4,75 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
+import org.springframework.hateoas.Link
+import org.springframework.hateoas.Resource
+import org.springframework.hateoas.ResourceSupport
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Component
+@RestController
+@RequestMapping("kapcsoloFolyoso")
 class KapcsoloFolyoso : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    final val mqttName = "folyoso-kapcsolo"
-    final val name = "Folyosó lámpakapcsoló ($mqttName)"
+    class DeviceState : ResourceSupport() {
+        val mqttName: String = "folyoso-kapcsolo"
+        val name: String = "Folyosó lámpakapcsoló ($mqttName)"
+        var longPressPowerOn: Boolean = false
+        var online: Boolean = false
+        var powerOn: Boolean = false
+    }
 
-    var longPressPowerOn = false
-    var stateOnline = false
-    var statePowerOn = false
+    var state = DeviceState()
 
     override var device = device {
 
         subscribe {
-            topic = "tele/$mqttName/LWT"
+            topic = "tele/${state.mqttName}/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
-                stateOnline = true
+                state.online = true
                 action(KapcsoloFolyoso::getState)
             }
         }
 
         subscribe {
-            topic = "tele/$mqttName/LWT"
+            topic = "tele/${state.mqttName}/LWT"
             payload = "Offline"
             handler = {
                 logger.info("offline")
-                stateOnline = false
+                state.online = false
             }
         }
 
         subscribe {
-            topic = "stat/$mqttName/RESULT"
+            topic = "stat/${state.mqttName}/RESULT"
             payload = "ON"
             jsonPath = "$.POWER"
             handler = {
                 logger.info("bekapcsolt")
-                statePowerOn = true
-                if (!longPressPowerOn) {
+                state.powerOn = true
+                if (!state.longPressPowerOn) {
                     actionTimeout(KapcsoloFolyoso::powerOff, seconds(30))
                 }
             }
         }
 
         subscribe {
-            topic = "stat/$mqttName/RESULT"
+            topic = "stat/${state.mqttName}/RESULT"
             payload = "OFF"
             jsonPath = "$.POWER"
             handler = {
                 logger.info("kikapcsolt")
-                statePowerOn = false
-                longPressPowerOn = false
+                state.powerOn = false
+                state.longPressPowerOn = false
                 clearTimeout(KapcsoloFolyoso::powerOff)
             }
         }
@@ -80,7 +92,7 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("hosszú érintéssel a folyosó lámpa bekapcsolása")
                 clearTimeout(KapcsoloFolyoso::powerOff)
-                longPressPowerOn = if (statePowerOn) {
+                state.longPressPowerOn = if (state.powerOn) {
                     action(KapcsoloFolyoso::powerOff)
                     false
                 } else {
@@ -90,32 +102,58 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
                 }
             }
         }
-
     }
 
-    fun getState() {
+    fun getState(): Boolean {
         logger.info("státusz lekérdezése")
-        publish("cmnd/$mqttName/state", "", false)
+        publish("cmnd/${state.mqttName}/state", "", false)
+        return true
     }
 
-    fun powerOn() {
+    fun powerOn(): Boolean {
         logger.info("bekapcsolás")
-        publish("cmnd/$mqttName/power", "ON", false)
+        publish("cmnd/${state.mqttName}/power", "ON", false)
+        return true
     }
 
-    fun powerOff() {
+    fun powerOff(): Boolean {
         logger.info("kikapcsolás")
-        publish("cmnd/$mqttName/power", "OFF", false)
+        publish("cmnd/${state.mqttName}/power", "OFF", false)
+        return true
     }
 
-    fun toggle() {
-        KonnektorNappali.logger.info("A $name átkapcsolása")
-        publish("cmnd/$mqttName/power", "TOGGLE", false)
+    fun toggle(): Boolean {
+        KonnektorNappali.logger.info("átkapcsolás")
+        publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
+        return true
+    }
+
+    @RequestMapping(produces = arrayOf("application/hal+json"))
+    fun getDeviceState(): Resource<DeviceState> {
+        val links = arrayListOf<Link>()
+        links.add(linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel())
+        if (state.online) {
+            if (state.powerOn) {
+                links.add(linkTo(methodOn(this::class.java).powerOffRest()).withSelfRel())
+            } else {
+                links.add(linkTo(methodOn(this::class.java).powerOnRest()).withSelfRel())
+            }
+        }
+        return Resource(state, links)
+    }
+
+    @RequestMapping("/powerOn")
+    fun powerOnRest(): ResponseEntity<Boolean> {
+        return ResponseEntity(powerOn(), HttpStatus.OK)
+    }
+
+    @RequestMapping("/powerOff")
+    fun powerOffRest(): ResponseEntity<Boolean> {
+        return ResponseEntity(powerOff(), HttpStatus.OK)
     }
 
     companion object {
         val logger = LoggerFactory.getLogger(KapcsoloFolyoso::class.java)!!
     }
-
 
 }

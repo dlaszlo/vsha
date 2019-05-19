@@ -2,75 +2,121 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
+import org.springframework.hateoas.Link
+import org.springframework.hateoas.Resource
+import org.springframework.hateoas.ResourceSupport
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-@Component
+@RestController
+@RequestMapping("konnektorNappali")
 class KonnektorNappali : AbstractDeviceConfig() {
 
-    final val mqttName = "nappali-konnektor"
-    final val name = "Nappali konnektor ($mqttName)"
+    class DeviceState : ResourceSupport() {
+        val mqttName: String = "nappali-konnektor"
+        val name: String = "Nappali konnektor ($mqttName)"
+        var online: Boolean = false
+        var powerOn: Boolean = false
+    }
+
+    var state = DeviceState()
 
     override var device = device {
 
         subscribe {
-            topic = "tele/$mqttName/LWT"
+            topic = "tele/${state.mqttName}/LWT"
             payload = "Online"
             handler = {
-                logger.info("A $name online")
+                logger.info("online")
+                state.online = true
                 action(KonnektorNappali::getState)
             }
         }
 
         subscribe {
-            topic = "tele/$mqttName/LWT"
+            topic = "tele/${state.mqttName}/LWT"
             payload = "Offline"
             handler = {
-                logger.info("A $name offline")
+                state.online = false
+                logger.info("offline")
             }
         }
 
         subscribe {
-            topic = "stat/$mqttName/RESULT"
+            topic = "stat/${state.mqttName}/RESULT"
             payload = "ON"
             jsonPath = "$.POWER"
             handler = {
-                logger.info("A $name bekapcsolt")
+                logger.info("bekapcsolt")
+                state.powerOn = true
             }
         }
 
         subscribe {
-            topic = "stat/$mqttName/RESULT"
+            topic = "stat/${state.mqttName}/RESULT"
             payload = "OFF"
             jsonPath = "$.POWER"
             handler = {
-                logger.info("A $name kikapcsolt")
+                logger.info("kikapcsolt")
+                state.powerOn = false
             }
         }
     }
 
-    fun getState() {
-        logger.info("Státusz lekérdezése: $name")
-        publish("cmnd/$mqttName/state", "", false)
+    fun getState(): Boolean {
+        logger.info("státusz lekérdezése")
+        publish("cmnd/${state.mqttName}/state", "", false)
+        return true
     }
 
-    fun powerOn() {
-        logger.info("A $name bekapcsolása")
-        publish("cmnd/$mqttName/power", "ON", false)
+    fun powerOn(): Boolean {
+        logger.info("bekapcsolás")
+        publish("cmnd/${state.mqttName}/power", "ON", false)
+        return true
     }
 
-    fun powerOff() {
-        logger.info("A $name kikapcsolása")
-        publish("cmnd/$mqttName/power", "OFF", false)
+    fun powerOff(): Boolean {
+        logger.info("kikapcsolás")
+        publish("cmnd/${state.mqttName}/power", "OFF", false)
+        return true
     }
 
-    fun toggle() {
-        logger.info("A $name átkapcsolása")
-        publish("cmnd/$mqttName/power", "TOGGLE", false)
+    fun toggle(): Boolean {
+        logger.info("átkapcsolás")
+        publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
+        return true
+    }
+
+    @RequestMapping(produces = arrayOf("application/hal+json"))
+    fun getDeviceState(): Resource<DeviceState> {
+        val links = arrayListOf<Link>()
+        links.add(linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel())
+        if (state.online) {
+            if (state.powerOn) {
+                links.add(linkTo(methodOn(this::class.java).powerOffRest()).withSelfRel())
+            } else {
+                links.add(linkTo(methodOn(this::class.java).powerOnRest()).withSelfRel())
+            }
+        }
+        return Resource(state, links)
+    }
+
+    @RequestMapping("/powerOn")
+    fun powerOnRest(): ResponseEntity<Boolean> {
+        return ResponseEntity(powerOn(), HttpStatus.OK)
+    }
+
+    @RequestMapping("/powerOff")
+    fun powerOffRest(): ResponseEntity<Boolean> {
+        return ResponseEntity(powerOff(), HttpStatus.OK)
     }
 
     companion object {
         val logger = LoggerFactory.getLogger(KonnektorNappali::class.java)!!
     }
-
 
 }

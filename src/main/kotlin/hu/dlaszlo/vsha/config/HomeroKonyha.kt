@@ -3,20 +3,31 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.influxdb.dto.Point
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
+import org.springframework.hateoas.Resource
+import org.springframework.hateoas.ResourceSupport
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.TimeUnit
 
-@Component
+@RestController
+@RequestMapping("homeroKonyha")
 class HomeroKonyha : AbstractDeviceConfig() {
 
-    final val calibrateRoomTemperature = -1.3
-    final val mqttName = "homero1"
-    final val name = "Konyhai hőmérő ($mqttName)"
+    class DeviceState : ResourceSupport() {
+        val mqttName: String = "homero1"
+        val name: String = "Konyhai hőmérő ($mqttName)"
+    }
+
+    var state = DeviceState()
+
+    val calibrateRoomTemperature = -1.3
 
     override var device = device {
 
         subscribe {
-            topic = "$mqttName/adat"
+            topic = "${state.mqttName}/adat"
             handler = { payload ->
                 logger.info(payload)
 
@@ -47,6 +58,12 @@ class HomeroKonyha : AbstractDeviceConfig() {
             }
         }
 
+    }
+
+    @RequestMapping(produces = arrayOf("application/hal+json"))
+    fun getDeviceState(): Resource<DeviceState> {
+        val link1 = linkTo(methodOn(this::class.java).getDeviceState()).withSelfRel()
+        return Resource(state, link1)
     }
 
     companion object {

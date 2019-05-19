@@ -81,7 +81,7 @@ abstract class AbstractDeviceConfig {
         return TimeUnit.SECONDS.toMillis(seconds)
     }
 
-    inline fun <reified T : AbstractDeviceConfig> action(noinline action: (t: T) -> Unit) {
+    inline fun <reified T : AbstractDeviceConfig> action(noinline action: (t: T) -> Boolean) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
@@ -100,7 +100,7 @@ abstract class AbstractDeviceConfig {
     }
 
 
-    inline fun <reified T : AbstractDeviceConfig> clearTimeout(noinline action: (t: T) -> Unit) {
+    inline fun <reified T : AbstractDeviceConfig> clearTimeout(noinline action: (t: T) -> Boolean) {
         val device = applicationContext.getBean(T::class.java)
         val iterator = schedulerList.iterator()
         while (iterator.hasNext()) {
@@ -114,14 +114,14 @@ abstract class AbstractDeviceConfig {
         }
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionTimeout(noinline action: (t: T) -> Unit, timeout: Long) {
+    inline fun <reified T : AbstractDeviceConfig> actionTimeout(noinline action: (t: T) -> Boolean, timeout: Long) {
         clearTimeout(action)
         val device = applicationContext.getBean(T::class.java)
         val scheduler = Scheduler(device, action, ScheduleType.Timeout, timeout, null)
         schedulerList.add(scheduler)
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionFixedRate(noinline action: (t: T) -> Unit, timeout: Long) {
+    inline fun <reified T : AbstractDeviceConfig> actionFixedRate(noinline action: (t: T) -> Boolean, timeout: Long) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {
@@ -139,7 +139,10 @@ abstract class AbstractDeviceConfig {
         }
     }
 
-    inline fun <reified T : AbstractDeviceConfig> actionCron(noinline action: (t: T) -> Unit, cronDefinition: String) {
+    inline fun <reified T : AbstractDeviceConfig> actionCron(
+        noinline action: (t: T) -> Boolean,
+        cronDefinition: String
+    ) {
         var found = false
         val device = applicationContext.getBean(T::class.java)
         for (scheduler in schedulerList) {

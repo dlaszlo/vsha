@@ -5,7 +5,6 @@ import hu.dlaszlo.vsha.device.Device
 import hu.dlaszlo.vsha.sms.SmsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.ResourceSupport
 import java.util.Arrays.asList
 
 open class ErzekeloVizelfolyasMosogep : AbstractDeviceConfig() {

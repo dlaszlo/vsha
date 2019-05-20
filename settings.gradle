@@ -1,3 +1,5 @@
-rootProject.name = 'vsha'
+include "backend"
+include "frontend"
+
 rootProject.name = 'vsha'
 

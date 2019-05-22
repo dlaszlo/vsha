@@ -4,9 +4,11 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.sunsetsunrise.SunsetSunriseService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.util.Arrays.asList
 
-open class ErzekeloMozgasFolyoso : AbstractDeviceConfig() {
+@Component("erzekeloMozgasFolyoso")
+class ErzekeloMozgasFolyoso : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var sunsetSunriseService: SunsetSunriseService

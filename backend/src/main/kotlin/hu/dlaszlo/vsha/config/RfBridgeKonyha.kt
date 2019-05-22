@@ -3,8 +3,10 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 
-open class RfBridgeKonyha : AbstractDeviceConfig() {
+@Component("rfBridgeKonyha")
+class RfBridgeKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
         val mqttName: String = "konyha-rfbridge",

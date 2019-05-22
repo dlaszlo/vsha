@@ -80,15 +80,22 @@ class HomeAutomationService : Runnable {
                                 if (subscribe.jsonPath != null) {
                                     try {
                                         val pl = JsonPath.parse(message.payload).read(subscribe.jsonPath) as String
-                                        if (subscribe.payload == null || subscribe.payload.equals(pl, true)) {
+                                        if (subscribe.payload == null && subscribe.payloadList.isNullOrEmpty()
+                                            || subscribe.payload != null && subscribe.payload.equals(pl, true)
+                                            || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(pl, true) }
+                                        ) {
                                             subscribe.handler(pl)
                                         }
                                     } catch (e: PathNotFoundException) {
                                         //
                                     }
                                 } else {
-                                    if (subscribe.payload == null || subscribe.payload.equals(message.payload, true))
+                                    if (subscribe.payload == null && subscribe.payloadList.isNullOrEmpty()
+                                        || subscribe.payload != null && subscribe.payload.equals(message.payload, true)
+                                        || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(message.payload, true) }
+                                    ) {
                                         subscribe.handler(message.payload)
+                                    }
                                 }
                             }
                         }

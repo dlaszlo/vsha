@@ -2,17 +2,18 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
-import org.springframework.hateoas.ResourceSupport
+import org.springframework.stereotype.Component
 
-open class VentilatorKonyha : AbstractDeviceConfig() {
+@Component("ventilatorKonyha")
+class VentilatorKonyha : AbstractDeviceConfig() {
 
-    class DeviceState : ResourceSupport() {
-        val mqttName: String = "konyha-ventilator"
-        val name: String = "Konyha ventilator ($mqttName)"
-        var scheduledTurnedOn: Boolean = false
-        var online: Boolean = false
+    data class DeviceState(
+        val mqttName: String = "konyha-ventilator",
+        val name: String = "Konyha ventilator ($mqttName)",
+        var scheduledTurnedOn: Boolean = false,
+        var online: Boolean = false,
         var powerOn: Boolean = false
-    }
+    )
 
     var state = DeviceState()
 

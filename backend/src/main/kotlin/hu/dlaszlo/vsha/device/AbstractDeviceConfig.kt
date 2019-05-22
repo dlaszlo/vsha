@@ -81,6 +81,10 @@ abstract class AbstractDeviceConfig {
         return TimeUnit.SECONDS.toMillis(seconds)
     }
 
+    inline fun <reified T : AbstractDeviceConfig> getDevice() : T {
+        return applicationContext.getBean(T::class.java)
+    }
+
     inline fun <reified T : AbstractDeviceConfig> action(noinline action: (t: T) -> Boolean) {
         var found = false
         val device = applicationContext.getBean(T::class.java)

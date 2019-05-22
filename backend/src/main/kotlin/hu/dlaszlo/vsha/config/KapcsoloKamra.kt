@@ -4,8 +4,10 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
-open class KapcsoloKamra : AbstractDeviceConfig() {
+@Component("kapcsoloKamra")
+class KapcsoloKamra : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService

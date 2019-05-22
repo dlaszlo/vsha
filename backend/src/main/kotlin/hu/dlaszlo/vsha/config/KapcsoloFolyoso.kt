@@ -4,20 +4,21 @@ import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.hateoas.ResourceSupport
+import org.springframework.stereotype.Component
 
-open class KapcsoloFolyoso : AbstractDeviceConfig() {
+@Component("kapcsoloFolyoso")
+class KapcsoloFolyoso : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
-    class DeviceState : ResourceSupport() {
-        val mqttName: String = "folyoso-kapcsolo"
-        val name: String = "Folyosó lámpakapcsoló ($mqttName)"
-        var longPressPowerOn: Boolean = false
-        var online: Boolean = false
+    data class DeviceState(
+        val mqttName: String = "folyoso-kapcsolo",
+        val name: String = "Folyosó lámpakapcsoló ($mqttName)",
+        var longPressPowerOn: Boolean = false,
+        var online: Boolean = false,
         var powerOn: Boolean = false
-    }
+    )
 
     var state = DeviceState()
 
@@ -72,7 +73,8 @@ open class KapcsoloFolyoso : AbstractDeviceConfig() {
             payload = "TOGGLE"
             handler = {
                 logger.info("dupla érintéssel a konyha kapcsolók kapcsolása")
-                action(KapcsoloKonyha::toggle)
+                action(KapcsoloKonyhapult::toggle)
+                action(KapcsoloKonyha::powerOff)
             }
         }
 

@@ -3,9 +3,11 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import java.util.Arrays.asList
 
-open class ErzekeloAblaknyitasKonyha : AbstractDeviceConfig() {
+@Component("erzekeloAblaknyitasKonyha")
+class ErzekeloAblaknyitasKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
         val mqttName1: String = "konyha-rfbridge",

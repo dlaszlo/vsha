@@ -2,8 +2,10 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 
-open class KonnektorNappali : AbstractDeviceConfig() {
+@Component("konnektorNappali")
+class KonnektorNappali : AbstractDeviceConfig() {
 
     data class DeviceState(
         val mqttName: String = "nappali-konnektor",

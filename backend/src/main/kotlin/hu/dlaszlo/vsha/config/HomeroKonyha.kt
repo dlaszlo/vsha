@@ -3,9 +3,11 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import org.influxdb.dto.Point
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
-open class HomeroKonyha : AbstractDeviceConfig() {
+@Component("homeroKonyha")
+class HomeroKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
         val mqttName: String = "homero1",

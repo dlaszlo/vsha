@@ -6,15 +6,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsoloKonyha1")
-class KapcsoloKonyha : AbstractDeviceConfig() {
+@Component("kapcsoloFurdoszobaTukor")
+class KapcsoloFurdoszobaTukor : AbstractDeviceConfig() {
 
     @Autowired
     lateinit var gpioService: GpioService
 
     data class DeviceState(
-        val mqttName: String = "konyha-kapcsolo",
-        val name: String = "Konyha lámpakapcsoló ($mqttName)",
+        val mqttName: String = "furdoszoba-tukor-kapcsolo",
+        val name: String = "Fürdőszoba tükör lámpakapcsoló ($mqttName)",
         var longPressPowerOn: Boolean = false,
         var online: Boolean = false,
         var powerOn: Boolean = false
@@ -23,14 +23,13 @@ class KapcsoloKonyha : AbstractDeviceConfig() {
     var state = DeviceState()
 
     override var device = device {
-
         subscribe {
             topic = "tele/${state.mqttName}/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
                 state.online = true
-                action(KapcsoloKonyha::getState)
+                action(KapcsoloFurdoszobaTukor::getState)
             }
         }
 
@@ -46,12 +45,12 @@ class KapcsoloKonyha : AbstractDeviceConfig() {
         subscribe {
             topic = "stat/${state.mqttName}/RESULT"
             payload = "ON"
-            jsonPath = "$.POWER1"
+            jsonPath = "$.POWER"
             handler = {
-                logger.info("konyha lámpa bekapcsolt")
+                logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloKonyha::powerOff, minutes(30))
+                    actionTimeout(KapcsoloFurdoszobaTukor::powerOff, minutes(45))
                 }
             }
         }
@@ -59,35 +58,37 @@ class KapcsoloKonyha : AbstractDeviceConfig() {
         subscribe {
             topic = "stat/${state.mqttName}/RESULT"
             payload = "OFF"
-            jsonPath = "$.POWER1"
+            jsonPath = "$.POWER"
             handler = {
-                logger.info("konyha lámpa kikapcsolt")
+                logger.info("kikapcsolt")
                 state.powerOn = false
                 state.longPressPowerOn = false
-                clearTimeout(KapcsoloKonyha::powerOff)
+                clearTimeout(KapcsoloFurdoszobaTukor::powerOff)
             }
         }
 
         subscribe {
-            topic = "cmnd/konyha-kapcsolo-topic/POWER1"
+            topic = "cmnd/furdo-tukor-kapcsolo-topic/POWER"
             payload = "TOGGLE"
             handler = {
-                KapcsoloNappali.logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
-                action(KapcsoloFolyoso::toggle)
+                logger.info("dupla érintéssel a konyha kapcsolók kapcsolása")
+                action(KapcsoloKonyhapult::toggle)
+                action(KapcsoloKonyha::powerOff)
             }
         }
 
+
         subscribe {
-            topic = "cmnd/konyha-kapcsolo-topic/POWER1"
+            topic = "cmnd/furdo-tukor-kapcsolo-topic/POWER"
             payload = "HOLD"
             handler = {
-                logger.info("hosszú érintéssel a konyha lámpa bekapcsolása")
-                clearTimeout(KapcsoloKonyha::powerOff)
+                logger.info("hosszú érintéssel a fürdőszoba lámpa bekapcsolása")
+                clearTimeout(KapcsoloFurdoszobaTukor::powerOff)
                 state.longPressPowerOn = if (state.powerOn) {
-                    action(KapcsoloKonyha::powerOff)
+                    action(KapcsoloFurdoszobaTukor::powerOff)
                     false
                 } else {
-                    action(KapcsoloKonyha::powerOn)
+                    action(KapcsoloFurdoszobaTukor::powerOn)
                     gpioService.beep(100)
                     true
                 }
@@ -103,20 +104,19 @@ class KapcsoloKonyha : AbstractDeviceConfig() {
     }
 
     fun powerOn(): Boolean {
-        logger.info("konyha lámpa bekapcsolás")
-        publish("cmnd/${state.mqttName}/power1", "ON", false)
+        logger.info("bekapcsolás")
+        publish("cmnd/${state.mqttName}/power", "ON", false)
         return true
     }
 
     fun powerOff(): Boolean {
-        logger.info("konyha lámpa kikapcsolás")
-        publish("cmnd/${state.mqttName}/power1", "OFF", false)
+        logger.info("kikapcsolás")
+        publish("cmnd/${state.mqttName}/power", "OFF", false)
         return true
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(KapcsoloKonyha::class.java)!!
+        val logger = LoggerFactory.getLogger(KapcsoloFurdoszobaTukor::class.java)!!
     }
-
 
 }

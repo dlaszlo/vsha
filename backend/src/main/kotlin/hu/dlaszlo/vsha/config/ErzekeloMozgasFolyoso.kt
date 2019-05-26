@@ -30,7 +30,7 @@ class ErzekeloMozgasFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("mozgás észlelve")
                 if (!sunsetSunriseService.isDaylight()) {
-                    action(KapcsoloFolyoso::powerOn)
+                    action(KapcsoloFolyoso::automaticPowerOn)
                 }
             }
         }

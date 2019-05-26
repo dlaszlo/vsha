@@ -2,12 +2,13 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
+import hu.dlaszlo.vsha.device.Switch
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("kapcsoloNappali")
-class KapcsoloNappali : AbstractDeviceConfig() {
+class KapcsoloNappali : AbstractDeviceConfig(), Switch {
 
     @Autowired
     lateinit var gpioService: GpioService
@@ -83,14 +84,9 @@ class KapcsoloNappali : AbstractDeviceConfig() {
             handler = {
                 logger.info("hosszú érintéssel a nappali lámpa bekapcsolása")
                 clearTimeout(KapcsoloNappali::powerOff)
-                state.longPressPowerOn = if (state.powerOn) {
-                    action(KapcsoloNappali::powerOff)
-                    false
-                } else {
-                    action(KapcsoloNappali::powerOn)
-                    gpioService.beep(100)
-                    true
-                }
+                state.longPressPowerOn = true
+                action(KapcsoloNappali::powerOn)
+                gpioService.beep(100)
             }
         }
 
@@ -102,15 +98,21 @@ class KapcsoloNappali : AbstractDeviceConfig() {
         return true
     }
 
-    fun powerOn(): Boolean {
+    override fun powerOn(): Boolean {
         logger.info("bekapcsolás")
         publish("cmnd/${state.mqttName}/power", "ON", false)
         return true
     }
 
-    fun powerOff(): Boolean {
+    override fun powerOff(): Boolean {
         logger.info("kikapcsolás")
         publish("cmnd/${state.mqttName}/power", "OFF", false)
+        return true
+    }
+
+    override fun toggle(): Boolean {
+        KonnektorNappali.logger.info("átkapcsolás")
+        publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
         return true
     }
 

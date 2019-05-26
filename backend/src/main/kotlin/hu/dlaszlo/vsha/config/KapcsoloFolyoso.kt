@@ -2,12 +2,13 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.GpioService
+import hu.dlaszlo.vsha.device.Switch
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("kapcsoloFolyoso")
-class KapcsoloFolyoso : AbstractDeviceConfig() {
+class KapcsoloFolyoso : AbstractDeviceConfig(), Switch {
 
     @Autowired
     lateinit var gpioService: GpioService
@@ -15,9 +16,12 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
     data class DeviceState(
         val mqttName: String = "folyoso-kapcsolo",
         val name: String = "Folyosó lámpakapcsoló ($mqttName)",
-        var longPressPowerOn: Boolean = false,
+        var lastPowerOff: Long = 0,
+        var automaticPowerOff: Boolean = false,
+        var forcedPowerOn: Boolean = false,
         var online: Boolean = false,
-        var powerOn: Boolean = false
+        var powerOn: Boolean = false,
+        var delayedPowerOn: Boolean = false
     )
 
     var state = DeviceState()
@@ -30,6 +34,8 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("online")
                 state.online = true
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
                 action(KapcsoloFolyoso::getState)
             }
         }
@@ -40,6 +46,8 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("offline")
                 state.online = false
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
             }
         }
 
@@ -49,9 +57,12 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             jsonPath = "$.POWER"
             handler = {
                 logger.info("bekapcsolt")
+                state.delayedPowerOn = true
                 state.powerOn = true
-                if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloFolyoso::powerOff, seconds(30))
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
+                if (!state.forcedPowerOn) {
+                    actionTimeout(KapcsoloFolyoso::automaticPowerOff, seconds(30))
                 }
             }
         }
@@ -63,8 +74,13 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("kikapcsolt")
                 state.powerOn = false
-                state.longPressPowerOn = false
-                clearTimeout(KapcsoloFolyoso::powerOff)
+                state.forcedPowerOn = false
+                state.lastPowerOff = when {
+                    state.automaticPowerOff -> 0
+                    else -> currentTime()
+                }
+                state.automaticPowerOff = false
+                clearTimeout(KapcsoloFolyoso::automaticPowerOff)
             }
         }
 
@@ -84,14 +100,8 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
             handler = {
                 logger.info("hosszú érintéssel a folyosó lámpa bekapcsolása")
                 clearTimeout(KapcsoloFolyoso::powerOff)
-                state.longPressPowerOn = if (state.powerOn) {
-                    action(KapcsoloFolyoso::powerOff)
-                    false
-                } else {
-                    action(KapcsoloFolyoso::powerOn)
-                    gpioService.beep(100)
-                    true
-                }
+                state.forcedPowerOn = true
+                action(KapcsoloFolyoso::powerOn)
             }
         }
     }
@@ -102,19 +112,39 @@ class KapcsoloFolyoso : AbstractDeviceConfig() {
         return true
     }
 
-    fun powerOn(): Boolean {
+    override fun powerOn(): Boolean {
         logger.info("bekapcsolás")
         publish("cmnd/${state.mqttName}/power", "ON", false)
         return true
     }
 
-    fun powerOff(): Boolean {
+    override fun powerOff(): Boolean {
         logger.info("kikapcsolás")
         publish("cmnd/${state.mqttName}/power", "OFF", false)
         return true
     }
 
-    fun toggle(): Boolean {
+    fun automaticPowerOn(): Boolean {
+        var time = currentTime()
+        return if (!state.delayedPowerOn || time - minutes(1) > state.lastPowerOff) {
+            logger.info("bekapcsolás")
+            publish("cmnd/${state.mqttName}/power", "ON", false)
+            true
+        } else {
+            logger.info("nem kapcsolható be jelenleg, hátralévő idő: {} s",
+                (minutes(1) + state.lastPowerOff - time) / 1000)
+            false
+        }
+    }
+
+    fun automaticPowerOff(): Boolean {
+        logger.info("kikapcsolás")
+        publish("cmnd/${state.mqttName}/power", "OFF", false)
+        state.automaticPowerOff = true
+        return true
+    }
+
+    override fun toggle(): Boolean {
         KonnektorNappali.logger.info("átkapcsolás")
         publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
         return true

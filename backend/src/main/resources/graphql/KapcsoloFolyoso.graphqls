@@ -1,0 +1,16 @@
+type StateKapcsoloFolyoso {
+    mqttName: String!
+    name: String!
+    forcedPowerOn: Boolean!
+    online: Boolean!
+    powerOn: Boolean!
+}
+
+type Query {
+    getStateKapcsoloFolyoso: StateKapcsoloFolyoso!
+}
+
+type Mutation {
+    powerOnKapcsoloFolyoso: Boolean!
+    powerOffKapcsoloFolyoso: Boolean!
+}

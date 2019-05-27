@@ -4,6 +4,9 @@ buildscript {
     ext.pi4j_version = "1.2"
     ext.paho_mqtt_version = "1.2.1"
     ext.influxdb_version = "2.15"
+    ext.graphql_spring_boot_version = "5.0.2"
+    ext.graphiql_spring_boot_version = "5.0.2"
+    ext.graphql_java_tools_version = "5.2.4"
 
     repositories {
         jcenter()
@@ -40,6 +43,9 @@ dependencies {
     api "com.jayway.jsonpath:json-path"
     api "org.influxdb:influxdb-java:$influxdb_version"
     api "com.pi4j:pi4j-core:$pi4j_version"
+    api "com.graphql-java:graphql-spring-boot-starter:$graphql_spring_boot_version"
+    api "com.graphql-java:graphiql-spring-boot-starter:$graphiql_spring_boot_version"
+    api "com.graphql-java:graphql-java-tools:$graphql_java_tools_version"
 
     testCompile group: "junit", name: "junit", version: "4.12"
 }

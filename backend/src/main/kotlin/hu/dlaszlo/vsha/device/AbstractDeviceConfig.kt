@@ -3,6 +3,7 @@ package hu.dlaszlo.vsha.device
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.mqtt.Mqtt
+import hu.dlaszlo.vsha.telegram.TelegramService
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
@@ -21,6 +22,9 @@ abstract class AbstractDeviceConfig {
 
     @Autowired(required = false)
     lateinit var influxDB: InfluxDB
+
+    @Autowired
+    lateinit var telegramService: TelegramService
 
     abstract var device: Device
 

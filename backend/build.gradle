@@ -7,6 +7,7 @@ buildscript {
     ext.graphql_spring_boot_version = "5.0.2"
     ext.graphiql_spring_boot_version = "5.0.2"
     ext.graphql_java_tools_version = "5.2.4"
+    ext.telegram_bot_api_version = "4.2.0"
 
     repositories {
         jcenter()
@@ -46,6 +47,7 @@ dependencies {
     api "com.graphql-java:graphql-spring-boot-starter:$graphql_spring_boot_version"
     api "com.graphql-java:graphiql-spring-boot-starter:$graphiql_spring_boot_version"
     api "com.graphql-java:graphql-java-tools:$graphql_java_tools_version"
+    api "com.github.pengrad:java-telegram-bot-api:$telegram_bot_api_version"
 
     testCompile group: "junit", name: "junit", version: "4.12"
 }

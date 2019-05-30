@@ -2,17 +2,12 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
-import hu.dlaszlo.vsha.sms.SmsService
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.Arrays.asList
 
 @Component("csengo")
 class Csengo : AbstractDeviceConfig() {
-
-    @Autowired
-    lateinit var smsService: SmsService
 
     data class DeviceState(
         val mqttName1: String = "konyha-rfbridge",
@@ -41,7 +36,7 @@ class Csengo : AbstractDeviceConfig() {
         if (currentTime() - lastSms > minutes(1)) {
             logger.info("SMS küldése")
             lastSms = currentTime()
-            smsService.sendSms("Csengetett valaki.")
+            telegramService.sendNotification("Csengetett valaki.")
         }
         return true
     }

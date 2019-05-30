@@ -8,8 +8,6 @@ mqtt.username = xxxx
 mqtt.password = xxxx
 mqtt.keepAliveInterval = 30
 
-sms.to = 003670xxxxxxx, 003670xxxxxxx
-
 spring.influx.database = xxxx
 spring.influx.retentionPolicy = xxxx
 spring.influx.url = http://x.x.x.x:8086

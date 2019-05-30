@@ -102,6 +102,7 @@ class KapcsoloFolyoso : AbstractDeviceConfig(), Switch {
                 clearTimeout(KapcsoloFolyoso::powerOff)
                 state.forcedPowerOn = true
                 action(KapcsoloFolyoso::powerOn)
+                gpioService.beep(100)
             }
         }
     }

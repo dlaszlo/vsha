@@ -7,15 +7,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsoloNappali")
-class KapcsoloNappali : AbstractDeviceConfig(), Switch {
+@Component("kapcsoloGyerekszoba")
+class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
 
     @Autowired
     lateinit var gpioService: GpioService
 
     data class DeviceState(
-        val mqttName: String = "nappali-kapcsolo",
-        val name: String = "Nappali lámpakapcsoló ($mqttName)",
+        val mqttName: String = "gyerekszoba-kapcsolo",
+        val name: String = "Gyerekszoba lámpakapcsoló ($mqttName)",
         var longPressPowerOn: Boolean = false,
         var online: Boolean = false,
         var powerOn: Boolean = false
@@ -24,13 +24,14 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
     var state = DeviceState()
 
     override var device = device {
+
         subscribe {
             topic = "tele/${state.mqttName}/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
                 state.online = true
-                action(KapcsoloNappali::getState)
+                action(KapcsoloGyerekszoba::getState)
             }
         }
 
@@ -51,7 +52,7 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloNappali::powerOff, minutes(5))
+                    actionTimeout(KapcsoloGyerekszoba::powerOff, minutes(5))
                 }
             }
         }
@@ -64,28 +65,27 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
                 logger.info("kikapcsolt")
                 state.powerOn = false
                 state.longPressPowerOn = false
-                clearTimeout(KapcsoloNappali::powerOff)
+                clearTimeout(KapcsoloGyerekszoba::powerOff)
             }
         }
 
         subscribe {
-            topic = "cmnd/nappali-kapcsolo-topic/POWER"
+            topic = "cmnd/gyerekszoba-kapcsolo-topic/POWER"
             payload = "TOGGLE"
             handler = {
-                logger.info("dupla érintéssel a nappali állólámpa kapcsolása")
-                action(KonnektorNappali::toggle)
+                logger.info("dupla érintéssel a folyosó lámpa kapcsolása")
+                action(KapcsoloFolyoso::toggle)
             }
         }
 
-
         subscribe {
-            topic = "cmnd/nappali-kapcsolo-topic/POWER"
+            topic = "cmnd/gyerekszoba-kapcsolo-topic/POWER"
             payload = "HOLD"
             handler = {
-                logger.info("hosszú érintéssel a nappali lámpa bekapcsolása")
-                clearTimeout(KapcsoloNappali::powerOff)
+                logger.info("hosszú érintéssel a gyerekszoba lámpa bekapcsolása")
+                clearTimeout(KapcsoloGyerekszoba::powerOff)
                 state.longPressPowerOn = true
-                action(KapcsoloNappali::powerOn)
+                action(KapcsoloGyerekszoba::powerOn)
                 gpioService.beep(100)
             }
         }
@@ -117,7 +117,7 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(KapcsoloNappali::class.java)!!
+        val logger = LoggerFactory.getLogger(KapcsoloGyerekszoba::class.java)!!
     }
 
 }

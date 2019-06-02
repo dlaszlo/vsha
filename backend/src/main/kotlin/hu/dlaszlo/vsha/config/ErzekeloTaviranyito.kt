@@ -33,6 +33,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KapcsoloKonyhapult::powerOff)
                 action(KapcsoloNappali::powerOff)
                 action(KonnektorNappali::powerOff)
+                action(KapcsoloGyerekszoba::powerOff)
+                action(KapcsoloHaloszoba::powerOff)
             }
         }
 
@@ -73,6 +75,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KapcsoloKonyhapult::powerOff)
                 action(KapcsoloNappali::powerOff)
                 action(KonnektorNappali::powerOff)
+                action(KapcsoloGyerekszoba::powerOff)
+                action(KapcsoloHaloszoba::powerOff)
             }
         }
 

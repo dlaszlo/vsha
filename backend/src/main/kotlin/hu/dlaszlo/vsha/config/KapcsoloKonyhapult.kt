@@ -16,9 +16,12 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
     data class DeviceState(
         val mqttName: String = "konyha-kapcsolo",
         val name: String = "Konyhapult lámpakapcsoló ($mqttName)",
-        var longPressPowerOn: Boolean = false,
+        var lastPowerOff: Long = 0,
+        var automaticPowerOff: Boolean = false,
+        var forcedPowerOn: Boolean = false,
         var online: Boolean = false,
-        var powerOn: Boolean = false
+        var powerOn: Boolean = false,
+        var delayedPowerOn: Boolean = false
     )
 
     var state = DeviceState()
@@ -31,6 +34,8 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("online")
                 state.online = true
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
                 action(KapcsoloKonyhapult::getState)
             }
         }
@@ -41,6 +46,8 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("offline")
                 state.online = false
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
             }
         }
 
@@ -50,9 +57,12 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             jsonPath = "$.POWER2"
             handler = {
                 logger.info("konyhapult lámpa bekapcsolt")
+                state.delayedPowerOn = true
                 state.powerOn = true
-                if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloKonyhapult::powerOff, minutes(30))
+                state.lastPowerOff = 0
+                state.automaticPowerOff = false
+                if (!state.forcedPowerOn) {
+                    actionTimeout(KapcsoloKonyhapult::automaticPowerOff, minutes(30))
                 }
             }
         }
@@ -64,8 +74,13 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("konyhapult lámpa kikapcsolt")
                 state.powerOn = false
-                state.longPressPowerOn = false
-                clearTimeout(KapcsoloKonyhapult::powerOff)
+                state.forcedPowerOn = false
+                state.lastPowerOff = when {
+                    state.automaticPowerOff -> 0
+                    else -> currentTime()
+                }
+                state.automaticPowerOff = false
+                clearTimeout(KapcsoloKonyhapult::automaticPowerOff)
             }
         }
 
@@ -84,7 +99,7 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("hosszú érintéssel a konyhapult lámpa bekapcsolása")
                 clearTimeout(KapcsoloKonyhapult::powerOff)
-                state.longPressPowerOn = true
+                state.forcedPowerOn = true
                 action(KapcsoloKonyhapult::powerOn)
                 gpioService.beep(100)
             }
@@ -107,6 +122,26 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
     override fun powerOff(): Boolean {
         logger.info("konyhapult lámpa kikapcsolás")
         publish("cmnd/${state.mqttName}/power2", "OFF", false)
+        return true
+    }
+
+    fun automaticPowerOn(): Boolean {
+        var time = currentTime()
+        return if (!state.delayedPowerOn || time - minutes(1) > state.lastPowerOff) {
+            logger.info("bekapcsolás")
+            publish("cmnd/${state.mqttName}/power2", "ON", false)
+            true
+        } else {
+            logger.info("nem kapcsolható be jelenleg, hátralévő idő: {} s",
+                (minutes(1) + state.lastPowerOff - time) / 1000)
+            false
+        }
+    }
+
+    fun automaticPowerOff(): Boolean {
+        logger.info("kikapcsolás")
+        publish("cmnd/${state.mqttName}/power2", "OFF", false)
+        state.automaticPowerOff = true
         return true
     }
 

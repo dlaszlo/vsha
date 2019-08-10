@@ -35,6 +35,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KonnektorNappali::powerOff)
                 action(KapcsoloGyerekszoba::powerOff)
                 action(KapcsoloHaloszoba::powerOff)
+                action(KapcsoloEloszoba::powerOff)
+                action(KapcsoloTerasz::powerOff)
             }
         }
 
@@ -46,6 +48,7 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 logger.info("Nappali állólámpa bekapcsolása")
                 action(KonnektorNappali::powerOn)
                 action(KapcsoloFurdoszobaTukor::powerOn)
+                action(KapcsoloEloszoba::powerOn)
             }
         }
 
@@ -77,6 +80,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KonnektorNappali::powerOff)
                 action(KapcsoloGyerekszoba::powerOff)
                 action(KapcsoloHaloszoba::powerOff)
+                action(KapcsoloEloszoba::powerOff)
+                action(KapcsoloTerasz::powerOff)
             }
         }
 

@@ -12,11 +12,11 @@ class Mutation : GraphQLMutationResolver {
     @Autowired
     lateinit var applicationContext: ApplicationContext
 
-    fun powerOnKapcsoloFolyoso() : Boolean {
+    fun powerOnKapcsoloFolyoso(): Boolean {
         return applicationContext.getBean(KapcsoloFolyoso::class.java).powerOn()
     }
 
-    fun powerOffKapcsoloFolyoso() : Boolean {
+    fun powerOffKapcsoloFolyoso(): Boolean {
         return applicationContext.getBean(KapcsoloFolyoso::class.java).powerOff()
     }
 

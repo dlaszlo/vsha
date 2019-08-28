@@ -7,16 +7,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsoloFurdoszoba")
-class KapcsoloFurdoszoba : AbstractDeviceConfig(), Switch {
+@Component("kapcsoloUdvar")
+class KapcsoloUdvar : AbstractDeviceConfig(), Switch {
 
     @Autowired
     lateinit var gpioService: GpioService
 
     data class DeviceState(
-        val mqttName: String = "furdoszoba-kapcsolo",
-        val name: String = "Fürdőszoba lámpakapcsoló ($mqttName)",
-        var longPressPowerOn: Boolean = false,
+        val mqttName: String = "udvar-kapcsolo",
+        val name: String = "Udvar lámpakapcsoló ($mqttName)",
         var online: Boolean = false,
         var powerOn: Boolean = false
     )
@@ -24,13 +23,14 @@ class KapcsoloFurdoszoba : AbstractDeviceConfig(), Switch {
     var state = DeviceState()
 
     override var device = device {
+
         subscribe {
             topic = "tele/${state.mqttName}/LWT"
             payload = "Online"
             handler = {
                 logger.info("online")
                 state.online = true
-                action(KapcsoloFurdoszoba::getState)
+                action(KapcsoloUdvar::getState)
             }
         }
 
@@ -50,9 +50,7 @@ class KapcsoloFurdoszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("bekapcsolt")
                 state.powerOn = true
-                if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloFurdoszoba::powerOff, minutes(40))
-                }
+                // actionTimeout(KapcsoloUdvar::powerOff, minutes(15))
             }
         }
 
@@ -63,34 +61,9 @@ class KapcsoloFurdoszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("kikapcsolt")
                 state.powerOn = false
-                state.longPressPowerOn = false
-                clearTimeout(KapcsoloFurdoszoba::powerOff)
+                // clearTimeout(KapcsoloUdvar::powerOff)
             }
         }
-
-        subscribe {
-            topic = "cmnd/furdo-kapcsolo-topic/POWER"
-            payload = "TOGGLE"
-            handler = {
-                logger.info("dupla érintéssel a konyha kapcsolók kapcsolása")
-                action(KapcsoloKonyhapult::toggle)
-                action(KapcsoloKonyha::powerOff)
-            }
-        }
-
-
-        subscribe {
-            topic = "cmnd/furdo-kapcsolo-topic/POWER"
-            payload = "HOLD"
-            handler = {
-                logger.info("hosszú érintéssel a fürdőszoba lámpa bekapcsolása")
-                clearTimeout(KapcsoloFurdoszoba::powerOff)
-                state.longPressPowerOn = true
-                action(KapcsoloFurdoszoba::powerOn)
-                gpioService.beep(100)
-            }
-        }
-
     }
 
     fun getState(): Boolean {
@@ -118,7 +91,7 @@ class KapcsoloFurdoszoba : AbstractDeviceConfig(), Switch {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(KapcsoloFurdoszoba::class.java)!!
+        val logger = LoggerFactory.getLogger(KapcsoloUdvar::class.java)!!
     }
 
 }

@@ -37,6 +37,7 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KapcsoloHaloszoba::powerOff)
                 action(KapcsoloEloszoba::powerOff)
                 action(KapcsoloTerasz::powerOff)
+                action(KapcsoloUdvar::powerOff)
             }
         }
 
@@ -82,10 +83,9 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KapcsoloHaloszoba::powerOff)
                 action(KapcsoloEloszoba::powerOff)
                 action(KapcsoloTerasz::powerOff)
+                action(KapcsoloUdvar::powerOff)
             }
         }
-
-
     }
 
     companion object {

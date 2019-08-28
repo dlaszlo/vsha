@@ -112,7 +112,7 @@ class KapcsoloFurdoszobaTukor : AbstractDeviceConfig(), Switch {
     }
 
     override fun toggle(): Boolean {
-        KonnektorNappali.logger.info("átkapcsolás")
+        logger.info("átkapcsolás")
         publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
         return true
     }

@@ -45,5 +45,4 @@ class Csengo : AbstractDeviceConfig() {
         val logger = LoggerFactory.getLogger(Csengo::class.java)!!
     }
 
-
 }

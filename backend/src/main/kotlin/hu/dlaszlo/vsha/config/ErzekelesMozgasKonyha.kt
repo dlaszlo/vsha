@@ -25,7 +25,7 @@ class ErzekeloMozgasKonyha : AbstractDeviceConfig() {
 
         subscribe {
             topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
-            payload = "EDFF5E"
+            payload = "EF78EE"
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("mozgás észlelve")

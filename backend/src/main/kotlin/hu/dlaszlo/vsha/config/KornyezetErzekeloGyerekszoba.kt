@@ -31,11 +31,17 @@ class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
                 val temperature: Double = jsonValue(payload, "$.temperature")!!
                 val humidity: Double = jsonValue(payload, "$.humidity")!!
                 val dewPointTemperature = calculateDewPoint(humidity, temperature)
-
-                logger.info(
-                    "Légköri nyomás: {}, Gáz ellenállás: {}, Levegő minőség: {}, Levegő minőség pontossága: {}, Hőmérséklet: {}, Relatív páratartalom: {}, Harmatponti hőmérséklet: {}",
-                    pressure, gasResistance, iaq, iaqAccuracy, temperature, humidity, dewPointTemperature
-                )
+                val breathVocEquivalent: Double = jsonValue(payload, "$.breathVocEquivalent")!!
+                val breathVocAccuracy: Int = jsonValue(payload, "$.breathVocAccuracy")!!
+                val co2Equivalent: Double = jsonValue(payload, "$.co2Equivalent")!!
+                val co2Accuracy: Int = jsonValue(payload, "$.co2Accuracy")!!
+                val compGasValue: Double = jsonValue(payload, "$.compGasValue")!!
+                val compGasAccuracy: Int = jsonValue(payload, "$.compGasAccuracy")!!
+                val gasPercentage: Double = jsonValue(payload, "$.gasPercentage")!!
+                val gasPercentageAcccuracy: Int = jsonValue(payload, "$.gasPercentageAcccuracy")!!
+                val staticIaq: Double = jsonValue(payload, "$.staticIaq")!!
+                val staticIaqAccuracy: Int = jsonValue(payload, "$.staticIaqAccuracy")!!
+                val stabStatus: Int = jsonValue(payload, "$.stabStatus")!!
 
                 influxDB.write(
                     Point.measurement("ambs2")
@@ -47,6 +53,17 @@ class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
                         .addField("temperature", temperature)
                         .addField("humidity", humidity)
                         .addField("dewPointTemperature", dewPointTemperature)
+                        .addField("breathVocEquivalent", breathVocEquivalent)
+                        .addField("breathVocAccuracy", breathVocAccuracy)
+                        .addField("co2Equivalent", co2Equivalent)
+                        .addField("co2Accuracy", co2Accuracy)
+                        .addField("compGasValue", compGasValue)
+                        .addField("compGasAccuracy", compGasAccuracy)
+                        .addField("gasPercentage", gasPercentage)
+                        .addField("gasPercentageAcccuracy", gasPercentageAcccuracy)
+                        .addField("staticIaq", staticIaq)
+                        .addField("staticIaqAccuracy", staticIaqAccuracy)
+                        .addField("stabStatus", stabStatus)
                         .build()
                 )
             }

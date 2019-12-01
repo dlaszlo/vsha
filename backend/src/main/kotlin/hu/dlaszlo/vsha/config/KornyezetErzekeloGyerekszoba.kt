@@ -6,12 +6,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
-@Component("kornyezetErzekelo1")
-class KornyezetErzekelo1 : AbstractDeviceConfig() {
+@Component("kornyezetErzekeloGyerekszoba")
+class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
 
     data class DeviceState(
-        val mqttName: String = "ambs1",
-        val name: String = "Környezet érzékelő ($mqttName)"
+        val mqttName: String = "ambs2",
+        val name: String = "Környezet érzékelő gyerekszoba ($mqttName)"
     )
 
     var state = DeviceState()
@@ -38,7 +38,7 @@ class KornyezetErzekelo1 : AbstractDeviceConfig() {
                 )
 
                 influxDB.write(
-                    Point.measurement("ambs1")
+                    Point.measurement("ambs2")
                         .time(currentTime(), TimeUnit.MILLISECONDS)
                         .addField("pressure", pressure)
                         .addField("gasResistance", gasResistance)
@@ -51,10 +51,9 @@ class KornyezetErzekelo1 : AbstractDeviceConfig() {
                 )
             }
         }
-
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(KornyezetErzekelo1::class.java)!!
+        val logger = LoggerFactory.getLogger(KornyezetErzekeloGyerekszoba::class.java)!!
     }
 }

@@ -1,22 +1,16 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
-import hu.dlaszlo.vsha.device.GpioService
 import hu.dlaszlo.vsha.device.Switch
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component("kapcsoloGyerekszoba")
-class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
-
-    @Autowired
-    lateinit var gpioService: GpioService
+@Component("konnektorFoldgomb")
+class KonnektorFoldgomb : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-        val mqttName: String = "gyerekszoba-kapcsolo",
-        val name: String = "Gyerekszoba lámpakapcsoló ($mqttName)",
-        var longPressPowerOn: Boolean = false,
+        val mqttName: String = "foldgomb-konnektor",
+        val name: String = "Földgömb konnektor ($mqttName)",
         var online: Boolean = false,
         var powerOn: Boolean = false
     )
@@ -31,7 +25,7 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("online")
                 state.online = true
-                action(KapcsoloGyerekszoba::getState)
+                action(KonnektorFoldgomb::getState)
             }
         }
 
@@ -39,8 +33,8 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
             topic = "tele/${state.mqttName}/LWT"
             payload = "Offline"
             handler = {
-                logger.info("offline")
                 state.online = false
+                logger.info("offline")
             }
         }
 
@@ -51,9 +45,6 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("bekapcsolt")
                 state.powerOn = true
-                if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloGyerekszoba::powerOff, minutes(5))
-                }
             }
         }
 
@@ -64,32 +55,8 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("kikapcsolt")
                 state.powerOn = false
-                state.longPressPowerOn = false
-                clearTimeout(KapcsoloGyerekszoba::powerOff)
             }
         }
-
-        subscribe {
-            topic = "cmnd/gyerekszoba-kapcsolo-topic/POWER"
-            payload = "TOGGLE"
-            handler = {
-                logger.info("dupla érintéssel a földgömb konnektor bekapcsolása")
-                action(KonnektorFoldgomb::toggle)
-            }
-        }
-
-        subscribe {
-            topic = "cmnd/gyerekszoba-kapcsolo-topic/POWER"
-            payload = "HOLD"
-            handler = {
-                logger.info("hosszú érintéssel a gyerekszoba lámpa bekapcsolása")
-                clearTimeout(KapcsoloGyerekszoba::powerOff)
-                state.longPressPowerOn = true
-                action(KapcsoloGyerekszoba::powerOn)
-                gpioService.beep(100)
-            }
-        }
-
     }
 
     fun getState(): Boolean {
@@ -117,7 +84,7 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(KapcsoloGyerekszoba::class.java)!!
+        val logger = LoggerFactory.getLogger(KonnektorFoldgomb::class.java)!!
     }
 
 }

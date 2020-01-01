@@ -77,7 +77,6 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
             }
         }
 
-
         subscribe {
             topic = "cmnd/nappali-kapcsolo-topic/POWER"
             payload = "HOLD"

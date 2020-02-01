@@ -17,6 +17,9 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
 
     var state = DeviceState()
 
+    var lastToggle1 = 0L
+    var lastToggle2 = 0L
+
     override var device: Device = device {
 
         subscribe {
@@ -35,6 +38,7 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
                 action(KonnektorNappali::powerOff)
                 action(KapcsoloGyerekszoba::powerOff)
                 action(KonnektorFoldgomb::powerOff)
+                action(KonnektorIroasztalLampa::powerOff)
                 action(KapcsoloHaloszoba::powerOff)
                 action(KapcsoloEloszoba::powerOff)
                 action(KapcsoloTerasz::powerOff)
@@ -48,9 +52,9 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Nappali állólámpa bekapcsolása")
-                action(KonnektorNappali::powerOn)
+                action(KonnektorIroasztalLampa::powerOn)
                 action(KapcsoloFurdoszobaTukor::powerOn)
-                action(KapcsoloEloszoba::powerOn)
+                action(KapcsoloKonyhapult::powerOn)
             }
         }
 
@@ -59,10 +63,11 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
             payloadList = asList("195944", "888884", "94AB64")
             jsonPath = "$.RfReceived.Data"
             handler = {
-                logger.info("Konyhai lámpák bekapcsolása")
-                action(KapcsoloFolyoso::powerOn)
-                action(KapcsoloKonyha::powerOn)
-                action(KapcsoloKonyhapult::powerOn)
+                if (currentTime() - lastToggle1 >= seconds(1)) {
+                    logger.info("Nappali állólámpa átkapcsolása")
+                    lastToggle1 = currentTime()
+                    action(KonnektorNappali::toggle)
+                }
             }
         }
 
@@ -71,21 +76,11 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
             payloadList = asList("195948", "888888", "94AB68")
             jsonPath = "$.RfReceived.Data"
             handler = {
-                logger.info("Lámpák kikapcsolása")
-                action(KapcsoloFolyoso::powerOff)
-                action(KapcsoloFurdoszoba::powerOff)
-                action(KapcsoloFurdoszobaTukor::powerOff)
-                action(KapcsoloKamra::powerOff)
-                action(KapcsoloKonyha::powerOff)
-                action(KapcsoloKonyhapult::powerOff)
-                action(KapcsoloNappali::powerOff)
-                action(KonnektorNappali::powerOff)
-                action(KapcsoloGyerekszoba::powerOff)
-                action(KonnektorFoldgomb::powerOff)
-                action(KapcsoloHaloszoba::powerOff)
-                action(KapcsoloEloszoba::powerOff)
-                action(KapcsoloTerasz::powerOff)
-                action(KapcsoloUdvar::powerOff)
+                if (currentTime() - lastToggle2 >= seconds(1)) {
+                    logger.info("Földgömb átkapcsolása")
+                    lastToggle2 = currentTime()
+                    action(KonnektorFoldgomb::toggle)
+                }
             }
         }
     }

@@ -1,31 +1,12 @@
-buildscript {
-    ext.kotlin_version = "1.3.61"
-    ext.spring_boot_version = "2.2.1.RELEASE"
-    ext.pi4j_version = "1.2"
-    ext.paho_mqtt_version = "1.2.2"
-    ext.influxdb_version = "2.16"
-    ext.graphql_spring_boot_version = "5.0.2"
-    ext.graphiql_spring_boot_version = "5.0.2"
-    ext.graphql_java_tools_version = "5.2.4"
-    ext.telegram_bot_api_version = "4.2.0"
-    ext.rxkotlin_version = "2.2.0"
-
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-    }
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
 }
 
-apply plugin: "java"
+apply plugin: "java-library"
 apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
 apply plugin: "org.springframework.boot"
-apply plugin: "io.spring.dependency-management"
 
 sourceCompatibility = 1.8
 
@@ -34,10 +15,12 @@ repositories {
 }
 
 dependencies {
+    api platform("org.springframework.boot:spring-boot-dependencies:$spring_boot_version")
+
     api project(":frontend")
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-reflect"
     api 'org.springframework.boot:spring-boot-starter-web'
     api "com.fasterxml.jackson.module:jackson-module-kotlin"
     api "org.apache.commons:commons-lang3"
@@ -45,13 +28,16 @@ dependencies {
     api "com.jayway.jsonpath:json-path"
     api "org.influxdb:influxdb-java:$influxdb_version"
     api "com.pi4j:pi4j-core:$pi4j_version"
-    api "com.graphql-java:graphql-spring-boot-starter:$graphql_spring_boot_version"
-    api "com.graphql-java:graphiql-spring-boot-starter:$graphiql_spring_boot_version"
-    api "com.graphql-java:graphql-java-tools:$graphql_java_tools_version"
+
+    api "com.graphql-java-kickstart:graphql-spring-boot-starter:$graphql_spring_boot_starter_version"
+    api "com.graphql-java-kickstart:graphql-java-servlet:$graphql_java_servlet_version"
+    api "com.graphql-java:graphql-java-extended-scalars:$graphql_java_extended_scalars_version"
+    runtimeOnly "com.graphql-java-kickstart:graphiql-spring-boot-starter:$graphql_spring_boot_starter_version"
+
     api "com.github.pengrad:java-telegram-bot-api:$telegram_bot_api_version"
     api "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
 
-    testCompile group: "junit", name: "junit", version: "4.12"
+    testImplementation "junit:junit"
 }
 
 compileKotlin {
@@ -62,7 +48,7 @@ compileTestKotlin {
 }
 
 bootJar {
-    archiveName = "vsha.jar"
+    archiveFileName = "vsha.jar"
     mainClassName = "hu.dlaszlo.vsha.HomeAutomationKt"
     exclude "application.properties.template"
     exclude "application.properties"

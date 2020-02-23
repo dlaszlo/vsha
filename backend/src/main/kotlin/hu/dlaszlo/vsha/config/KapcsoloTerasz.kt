@@ -50,7 +50,7 @@ class KapcsoloTerasz : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("bekapcsolt")
                 state.powerOn = true
-                actionTimeout(KapcsoloTerasz::powerOff, minutes(5))
+                actionTimeout(KapcsoloTerasz::powerOff, minutes(15))
             }
         }
 

@@ -51,7 +51,7 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloNappali::powerOff, minutes(5))
+                    actionTimeout(KapcsoloNappali::powerOff, minutes(30))
                 }
             }
         }

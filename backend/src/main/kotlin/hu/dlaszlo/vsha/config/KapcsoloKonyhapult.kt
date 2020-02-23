@@ -62,7 +62,7 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
                 state.lastPowerOff = 0
                 state.automaticPowerOff = false
                 if (!state.forcedPowerOn) {
-                    actionTimeout(KapcsoloKonyhapult::automaticPowerOff, minutes(30))
+                    actionTimeout(KapcsoloKonyhapult::automaticPowerOff, minutes(60))
                 }
             }
         }

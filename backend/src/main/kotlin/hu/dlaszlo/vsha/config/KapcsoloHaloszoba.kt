@@ -52,7 +52,7 @@ class KapcsoloHaloszoba : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloHaloszoba::powerOff, minutes(5))
+                    actionTimeout(KapcsoloHaloszoba::powerOff, minutes(30))
                 }
             }
         }

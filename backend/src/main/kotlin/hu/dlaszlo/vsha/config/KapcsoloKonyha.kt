@@ -52,7 +52,7 @@ class KapcsoloKonyha : AbstractDeviceConfig(), Switch {
                 logger.info("konyha lámpa bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloKonyha::powerOff, minutes(30))
+                    actionTimeout(KapcsoloKonyha::powerOff, minutes(40))
                 }
             }
         }

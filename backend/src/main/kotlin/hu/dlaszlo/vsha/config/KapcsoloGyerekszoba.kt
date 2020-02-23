@@ -52,7 +52,7 @@ class KapcsoloGyerekszoba : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloGyerekszoba::powerOff, minutes(5))
+                    actionTimeout(KapcsoloGyerekszoba::powerOff, minutes(30))
                 }
             }
         }

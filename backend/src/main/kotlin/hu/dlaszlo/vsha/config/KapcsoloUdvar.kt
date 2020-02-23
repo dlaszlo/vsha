@@ -50,7 +50,7 @@ class KapcsoloUdvar : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("bekapcsolt")
                 state.powerOn = true
-                // actionTimeout(KapcsoloUdvar::powerOff, minutes(15))
+                actionTimeout(KapcsoloUdvar::powerOff, minutes(15))
             }
         }
 

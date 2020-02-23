@@ -51,7 +51,7 @@ class KapcsoloFurdoszobaTukor : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 if (!state.longPressPowerOn) {
-                    actionTimeout(KapcsoloFurdoszobaTukor::powerOff, minutes(45))
+                    actionTimeout(KapcsoloFurdoszobaTukor::powerOff, minutes(60))
                 }
             }
         }

@@ -15,6 +15,7 @@ spring.influx.user = xxxx
 spring.influx.password = xxxx
 
 beeper.enabled = true
+beeper.pin.number = 21
 
 zenith = CIVIL
 latitude = 0.0

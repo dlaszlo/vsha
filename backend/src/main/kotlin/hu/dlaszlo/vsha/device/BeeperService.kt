@@ -1,21 +1,21 @@
 package hu.dlaszlo.vsha.device
 
-import com.pi4j.io.gpio.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
 
 @Component
-class GpioService {
+class BeeperService {
 
     @Value("\${beeper.enabled}")
     private var beeperEnabled: Boolean = false
 
-    var gpio: GpioController? = null
-    var beeper: GpioPinDigitalOutput? = null
+    @Value("21")
+    private var beeperPinNumber: String = "21"
 
     fun beep(vararg delaysInMillis: Long) {
         logger.info("Beep: {}", delaysInMillis.joinToString(", "))
@@ -23,15 +23,15 @@ class GpioService {
             var state = false
             for (delay in delaysInMillis) {
                 if (state) {
-                    beeper?.low()
+                    File("/sys/class/gpio/gpio$beeperPinNumber/value").writeText("0")
                 } else {
-                    beeper?.high()
+                    File("/sys/class/gpio/gpio$beeperPinNumber/value").writeText("1")
                 }
                 state = !state
                 Thread.sleep(delay)
             }
             if (state) {
-                beeper?.low()
+                File("/sys/class/gpio/gpio$beeperPinNumber/value").writeText("0")
             }
         }
     }
@@ -39,21 +39,22 @@ class GpioService {
     @PostConstruct
     fun initialize() {
         if (beeperEnabled) {
-            gpio = GpioFactory.getInstance()
-            beeper = gpio!!.provisionDigitalOutputPin(RaspiPin.GPIO_00, "Beeper", PinState.LOW)
-            beeper!!.setShutdownOptions(true, PinState.LOW)
+            if (!File("/sys/class/gpio/gpio$beeperPinNumber").exists()) {
+                File("/sys/class/gpio/export").writeText(beeperPinNumber)
+                File("/sys/class/gpio/gpio$beeperPinNumber/direction").writeText("out")
+            }
         }
     }
 
     @PreDestroy
     fun cleanUp() {
         if (beeperEnabled) {
-            gpio?.shutdown()
+            File("/sys/class/gpio/gpio$beeperPinNumber/value").writeText("0")
         }
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(GpioService::class.java)!!
+        val logger = LoggerFactory.getLogger(BeeperService::class.java)!!
     }
 
 }

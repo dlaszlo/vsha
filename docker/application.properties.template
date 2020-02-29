@@ -1,6 +1,4 @@
 
-# application.properties template
-
 mqtt.qos = 0
 mqtt.broker = tcp://192.168.x.x:1883
 mqtt.clientId = xxxx
@@ -15,8 +13,12 @@ spring.influx.user = xxxx
 spring.influx.password =
 
 beeper.enabled = true
+beeper.pin.number = 21
 
 zenith = CIVIL
 latitude = 0.0
 longitude = 0.0
 timeZone = Europe/Budapest
+
+telegram.bot_token = xxx
+telegram.chat_id = xxx

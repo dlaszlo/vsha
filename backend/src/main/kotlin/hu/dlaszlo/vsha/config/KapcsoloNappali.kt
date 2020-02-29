@@ -1,7 +1,7 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
-import hu.dlaszlo.vsha.device.GpioService
+import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 class KapcsoloNappali : AbstractDeviceConfig(), Switch {
 
     @Autowired
-    lateinit var gpioService: GpioService
+    lateinit var beeperService: BeeperService
 
     data class DeviceState(
         val mqttName: String = "nappali-kapcsolo",
@@ -85,7 +85,7 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
                 clearTimeout(KapcsoloNappali::powerOff)
                 state.longPressPowerOn = true
                 action(KapcsoloNappali::powerOn)
-                gpioService.beep(100)
+                beeperService.beep(100)
             }
         }
 

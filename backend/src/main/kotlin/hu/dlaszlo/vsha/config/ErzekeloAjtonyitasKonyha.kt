@@ -2,7 +2,7 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Device
-import hu.dlaszlo.vsha.device.GpioService
+import hu.dlaszlo.vsha.device.BeeperService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,7 +12,7 @@ import java.util.Arrays.asList
 class ErzekeloAjtonyitasKonyha : AbstractDeviceConfig() {
 
     @Autowired
-    lateinit var gpioService: GpioService
+    lateinit var beeperService: BeeperService
 
     data class DeviceState(
         val mqttName1: String = "konyha-rfbridge",
@@ -37,7 +37,7 @@ class ErzekeloAjtonyitasKonyha : AbstractDeviceConfig() {
                 state.doorOpened = true
                 if (currentTime() - lastBeepOpen > seconds(3)) {
                     lastBeepOpen = currentTime()
-                    gpioService.beep(100, 50, 100, 50, 100, 50, 100)
+                    beeperService.beep(100, 50, 100, 50, 100, 50, 100)
                 }
             }
         }
@@ -51,7 +51,7 @@ class ErzekeloAjtonyitasKonyha : AbstractDeviceConfig() {
                 state.doorOpened = false
                 if (currentTime() - lastBeepClose > seconds(3)) {
                     lastBeepClose = currentTime()
-                    gpioService.beep(200, 50, 200)
+                    beeperService.beep(200, 50, 200)
                 }
             }
         }

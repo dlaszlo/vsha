@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
 
     data class DeviceState(
-        val mqttName: String = "ambs2",
+        val mqttName: String = "ambs1",
         val name: String = "Környezet érzékelő gyerekszoba ($mqttName)"
     )
 
@@ -44,7 +44,7 @@ class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
                 val stabStatus: Int = jsonValue(payload, "$.stabStatus")!!
 
                 influxDB.write(
-                    Point.measurement("ambs2")
+                    Point.measurement("ambs1")
                         .time(currentTime(), TimeUnit.MILLISECONDS)
                         .addField("pressure", pressure)
                         .addField("gasResistance", gasResistance)

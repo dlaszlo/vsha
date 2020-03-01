@@ -1,4 +1,4 @@
-FROM adoptopenjdk:latest
+FROM arm32v7/openjdk:11
 COPY vsha.jar vsha.jar
 COPY application.properties application.properties
 COPY logback.xml logback.xml

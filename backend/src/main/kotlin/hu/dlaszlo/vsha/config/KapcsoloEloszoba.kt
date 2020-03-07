@@ -3,6 +3,7 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.graphql.DeviceInfo
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,7 +14,8 @@ class KapcsoloEloszoba : AbstractDeviceConfig(), Switch {
     @Autowired
     lateinit var beeperService: BeeperService
 
-    data class DeviceState(
+    data class DeviceState (
+        val deviceId: String = "kapcsoloEloszoba",
         val mqttName: String = "eloszoba-kapcsolo",
         val name: String = "Előszoba lámpakapcsoló ($mqttName)",
         var online: Boolean = false,
@@ -31,6 +33,7 @@ class KapcsoloEloszoba : AbstractDeviceConfig(), Switch {
                 logger.info("online")
                 state.online = true
                 action(KapcsoloEloszoba::getState)
+                subscriptions.updateDeviceInfo(state.deviceId, state.name, state.online, state.powerOn)
             }
         }
 
@@ -40,6 +43,7 @@ class KapcsoloEloszoba : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("offline")
                 state.online = false
+                subscriptions.updateDeviceInfo(state.deviceId, state.name, state.online, state.powerOn)
             }
         }
 
@@ -51,6 +55,7 @@ class KapcsoloEloszoba : AbstractDeviceConfig(), Switch {
                 logger.info("bekapcsolt")
                 state.powerOn = true
                 actionTimeout(KapcsoloEloszoba::powerOff, minutes(2))
+                subscriptions.updateDeviceInfo(state.deviceId, state.name, state.online, state.powerOn)
             }
         }
 
@@ -62,6 +67,7 @@ class KapcsoloEloszoba : AbstractDeviceConfig(), Switch {
                 logger.info("kikapcsolt")
                 state.powerOn = false
                 clearTimeout(KapcsoloEloszoba::powerOff)
+                subscriptions.updateDeviceInfo(state.deviceId, state.name, state.online, state.powerOn)
             }
         }
     }

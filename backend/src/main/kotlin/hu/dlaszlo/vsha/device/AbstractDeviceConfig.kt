@@ -2,6 +2,7 @@ package hu.dlaszlo.vsha.device
 
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
+import hu.dlaszlo.vsha.graphql.SubscriptionResolver
 import hu.dlaszlo.vsha.mqtt.Mqtt
 import hu.dlaszlo.vsha.telegram.TelegramService
 import org.influxdb.InfluxDB
@@ -25,6 +26,9 @@ abstract class AbstractDeviceConfig {
 
     @Autowired
     lateinit var telegramService: TelegramService
+
+    @Autowired
+    lateinit var subscriptions : SubscriptionResolver
 
     abstract var device: Device
 

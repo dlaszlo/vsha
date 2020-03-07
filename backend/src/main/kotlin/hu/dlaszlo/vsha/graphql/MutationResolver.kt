@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
-class Mutation : GraphQLMutationResolver {
+class MutationResolver : GraphQLMutationResolver {
 
     @Autowired
     lateinit var applicationContext: ApplicationContext

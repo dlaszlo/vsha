@@ -7,14 +7,19 @@ import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
 
 @Service
-class Query : GraphQLQueryResolver {
+class QueryResolver : GraphQLQueryResolver {
 
     @Autowired
     lateinit var applicationContext: ApplicationContext
 
-    fun getStateKapcsoloFolyoso() : hu.dlaszlo.vsha.config.KapcsoloFolyoso.DeviceState
-    {
-        return applicationContext.getBean(KapcsoloFolyoso::class.java).state
+    fun getStateKapcsoloFolyoso(): DeviceInfo {
+        val deviceState = applicationContext.getBean(KapcsoloFolyoso::class.java).state
+        return DeviceInfo(
+            deviceId = deviceState.mqttName,
+            name = deviceState.name,
+            online = deviceState.online,
+            powerOn = deviceState.powerOn
+        )
     }
 
 }

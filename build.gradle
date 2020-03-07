@@ -4,7 +4,7 @@ buildscript {
     ext.paho_mqtt_version = "1.2.2"
     ext.influxdb_version = "2.16"
     ext.telegram_bot_api_version = "4.2.0"
-    ext.rxkotlin_version = "2.2.0"
+    ext.rxjava_version = "2.2.18"
     ext.graphql_spring_boot_starter_version = "6.0.1"
     ext.graphql_java_servlet_version = "9.0.1"
     ext.graphql_java_extended_scalars_version = "1.0"

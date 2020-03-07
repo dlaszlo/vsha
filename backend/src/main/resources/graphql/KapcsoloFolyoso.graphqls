@@ -1,16 +1,19 @@
-type StateKapcsoloFolyoso {
-    mqttName: String!
+type DeviceInfo {
+    deviceId: String!
     name: String!
-    forcedPowerOn: Boolean!
     online: Boolean!
     powerOn: Boolean!
 }
 
 type Query {
-    getStateKapcsoloFolyoso: StateKapcsoloFolyoso!
+    getStateKapcsoloFolyoso: DeviceInfo!
 }
 
 type Mutation {
     powerOnKapcsoloFolyoso: Boolean!
     powerOffKapcsoloFolyoso: Boolean!
+}
+
+type Subscription {
+    subscribeDeviceInfoUpdate(deviceId:String!) : DeviceInfo!
 }

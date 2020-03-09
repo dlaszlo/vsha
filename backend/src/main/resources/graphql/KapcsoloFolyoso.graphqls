@@ -6,12 +6,12 @@ type DeviceInfo {
 }
 
 type Query {
-    getStateKapcsoloFolyoso: DeviceInfo!
+    getState(deviceId: String!): DeviceInfo!
 }
 
 type Mutation {
-    powerOnKapcsoloFolyoso: Boolean!
-    powerOffKapcsoloFolyoso: Boolean!
+    updateState(deviceId: String!): Boolean!
+    toggle(deviceId: String!): Boolean!
 }
 
 type Subscription {

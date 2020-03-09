@@ -2,6 +2,7 @@ package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -10,12 +11,12 @@ class KonnektorIroasztalLampa : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
         val mqttName: String = "iroasztal-lampa-konnektor",
-        val name: String = "Íróasztal lámpa konnektor ($mqttName)",
-        var online: Boolean = false,
-        var powerOn: Boolean = false
-    )
+        override var name: String = "Íróasztal lámpa konnektor ($mqttName)"
+    ) : SwitchState()
 
     var state = DeviceState()
+
+    override var switchState: SwitchState = state
 
     override var device = device {
 
@@ -25,7 +26,7 @@ class KonnektorIroasztalLampa : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("online")
                 state.online = true
-                action(KonnektorFoldgomb::getState)
+                action(KonnektorIroasztalLampa::getState)
             }
         }
 
@@ -59,7 +60,7 @@ class KonnektorIroasztalLampa : AbstractDeviceConfig(), Switch {
         }
     }
 
-    fun getState(): Boolean {
+    override fun getState(): Boolean {
         logger.info("státusz lekérdezése")
         publish("cmnd/${state.mqttName}/state", "", false)
         return true

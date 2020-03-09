@@ -3,6 +3,9 @@ package hu.dlaszlo.vsha
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.graphql.SubscriptionResolver
+import hu.dlaszlo.vsha.graphql.dto.DeviceInfo
 import hu.dlaszlo.vsha.mqtt.Mqtt
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.influxdb.InfluxDB
@@ -26,6 +29,9 @@ class HomeAutomationService : Runnable {
 
     @Autowired
     lateinit var context: ApplicationContext
+
+    @Autowired
+    lateinit var subscriptionResolver: SubscriptionResolver
 
     @Autowired(required = false)
     var influxDB: InfluxDB? = null
@@ -85,6 +91,13 @@ class HomeAutomationService : Runnable {
                                             || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(pl, true) }
                                         ) {
                                             subscribe.handler(pl)
+                                            if (device is Switch)
+                                            {
+                                                subscriptionResolver.updateDeviceInfo(device.device.deviceId,
+                                                    device.switchState.name,
+                                                    device.switchState.online,
+                                                    device.switchState.powerOn)
+                                            }
                                         }
                                     } catch (e: PathNotFoundException) {
                                         //
@@ -95,6 +108,13 @@ class HomeAutomationService : Runnable {
                                         || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(message.payload, true) }
                                     ) {
                                         subscribe.handler(message.payload)
+                                        if (device is Switch)
+                                        {
+                                            subscriptionResolver.updateDeviceInfo(device.device.deviceId,
+                                                device.switchState.name,
+                                                device.switchState.online,
+                                                device.switchState.powerOn)
+                                        }
                                     }
                                 }
                             }

@@ -1,7 +1,7 @@
 package hu.dlaszlo.vsha.graphql
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
-import hu.dlaszlo.vsha.config.KapcsoloFolyoso
+import hu.dlaszlo.vsha.device.Switch
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Service
@@ -12,12 +12,12 @@ class MutationResolver : GraphQLMutationResolver {
     @Autowired
     lateinit var applicationContext: ApplicationContext
 
-    fun powerOnKapcsoloFolyoso(): Boolean {
-        return applicationContext.getBean(KapcsoloFolyoso::class.java).powerOn()
+    fun updateState(deviceId: String): Boolean {
+        return applicationContext.getBean(deviceId, Switch::class.java).getState()
     }
 
-    fun powerOffKapcsoloFolyoso(): Boolean {
-        return applicationContext.getBean(KapcsoloFolyoso::class.java).powerOff()
+    fun toggle(deviceId: String): Boolean {
+        return applicationContext.getBean(deviceId, Switch::class.java).toggle()
     }
 
 }

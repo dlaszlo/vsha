@@ -20,7 +20,18 @@ import { getMainDefinition } from 'apollo-utilities'
 
 const httpLink = createUploadLink(new BatchHttpLink({ uri: '/graphql'}))
 
-const subClient = new SubscriptionClient('ws://localhost:8080/subscriptions', {
+let loc = window.location, subscriptionClientUrl;
+if (loc.protocol === "https:") {
+    console.log(loc.protocol)
+    subscriptionClientUrl = "wss:";
+} else {
+    console.log(loc.protocol)
+    subscriptionClientUrl = "ws:";
+}
+subscriptionClientUrl += "//" + loc.host;
+subscriptionClientUrl += loc.pathname + "/subscriptions";
+
+const subClient = new SubscriptionClient(subscriptionClientUrl, {
     reconnect: true,
     connectionParams: {
     }

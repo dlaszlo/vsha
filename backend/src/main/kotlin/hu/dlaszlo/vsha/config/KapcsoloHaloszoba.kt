@@ -3,6 +3,7 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -15,13 +16,13 @@ class KapcsoloHaloszoba : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
         val mqttName: String = "haloszoba-kapcsolo",
-        val name: String = "Hálószoba lámpakapcsoló ($mqttName)",
-        var longPressPowerOn: Boolean = false,
-        var online: Boolean = false,
-        var powerOn: Boolean = false
-    )
+        override var name: String = "Hálószoba lámpakapcsoló ($mqttName)",
+        var longPressPowerOn: Boolean = false
+    ) : SwitchState()
 
     var state = DeviceState()
+
+    override var switchState: SwitchState = state
 
     override var device = device {
 
@@ -92,7 +93,7 @@ class KapcsoloHaloszoba : AbstractDeviceConfig(), Switch {
 
     }
 
-    fun getState(): Boolean {
+    override fun getState(): Boolean {
         logger.info("státusz lekérdezése")
         publish("cmnd/${state.mqttName}/state", "", false)
         return true

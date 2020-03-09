@@ -1,6 +1,7 @@
 package hu.dlaszlo.vsha.graphql
 
 import com.coxautodev.graphql.tools.GraphQLSubscriptionResolver
+import hu.dlaszlo.vsha.graphql.dto.DeviceInfo
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -10,7 +11,7 @@ import org.reactivestreams.Publisher
 import org.springframework.stereotype.Service
 
 @Service
-public class SubscriptionResolver : GraphQLSubscriptionResolver {
+class SubscriptionResolver : GraphQLSubscriptionResolver {
 
     var publisher: Flowable<DeviceInfo>? = null
 
@@ -26,7 +27,7 @@ public class SubscriptionResolver : GraphQLSubscriptionResolver {
         publisher = connectableObservable.toFlowable(BackpressureStrategy.BUFFER)
     }
 
-    public fun updateDeviceInfo(deviceId: String, name: String, online: Boolean, powerOn: Boolean) {
+    fun updateDeviceInfo(deviceId: String, name: String, online: Boolean, powerOn: Boolean) {
         val deviceInfo = DeviceInfo(
             deviceId,
             name,
@@ -36,7 +37,7 @@ public class SubscriptionResolver : GraphQLSubscriptionResolver {
         emitter?.onNext(deviceInfo)
     }
 
-    public fun subscribeDeviceInfoUpdate(deviceId: String): Publisher<DeviceInfo> {
+    fun subscribeDeviceInfoUpdate(deviceId: String): Publisher<DeviceInfo> {
         return publisher!!.filter { d: DeviceInfo -> d.deviceId == deviceId }
     }
 }

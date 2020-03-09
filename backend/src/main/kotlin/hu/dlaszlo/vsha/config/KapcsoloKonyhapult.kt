@@ -3,6 +3,7 @@ package hu.dlaszlo.vsha.config
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -15,16 +16,16 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
         val mqttName: String = "konyha-kapcsolo",
-        val name: String = "Konyhapult lámpakapcsoló ($mqttName)",
+        override var name: String = "Konyhapult lámpakapcsoló ($mqttName)",
         var lastPowerOff: Long = 0,
         var automaticPowerOff: Boolean = false,
         var forcedPowerOn: Boolean = false,
-        var online: Boolean = false,
-        var powerOn: Boolean = false,
         var delayedPowerOn: Boolean = false
-    )
+    ) : SwitchState()
 
     var state = DeviceState()
+
+    override var switchState: SwitchState = state
 
     override var device = device {
 
@@ -107,7 +108,7 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
 
     }
 
-    fun getState(): Boolean {
+    override fun getState(): Boolean {
         logger.info("státusz lekérdezése")
         publish("cmnd/${state.mqttName}/state", "", false)
         return true

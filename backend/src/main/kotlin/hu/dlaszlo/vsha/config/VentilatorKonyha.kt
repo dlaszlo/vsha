@@ -1,21 +1,23 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import hu.dlaszlo.vsha.device.Switch
+import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component("ventilatorKonyha")
-class VentilatorKonyha : AbstractDeviceConfig() {
+class VentilatorKonyha : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-        val mqttName: String = "konyha-ventilator",
-        val name: String = "Konyha ventilator ($mqttName)",
+        var mqttName: String = "konyha-ventilator",
         var scheduledTurnedOn: Boolean = false,
-        var online: Boolean = false,
-        var powerOn: Boolean = false
-    )
+        override var name: String = "Konyha ventilator ($mqttName)"
+    ) : SwitchState()
 
     var state = DeviceState()
+
+    override var switchState: SwitchState = state
 
     var lastTurnOff = 0L
 
@@ -66,13 +68,13 @@ class VentilatorKonyha : AbstractDeviceConfig() {
         }
     }
 
-    fun getState(): Boolean {
+    override fun getState(): Boolean {
         logger.info("státusz lekérdezése")
         publish("cmnd/${state.mqttName}/state", "", false)
         return true
     }
 
-    fun powerOn(): Boolean {
+    override fun powerOn(): Boolean {
         if (!state.scheduledTurnedOn && currentTime() - lastTurnOff > minutes(1)) {
             logger.info("bekapcsolás")
             publish("cmnd/${state.mqttName}/power", "ON", false)
@@ -81,7 +83,7 @@ class VentilatorKonyha : AbstractDeviceConfig() {
         return false
     }
 
-    fun powerOff(): Boolean {
+    override fun powerOff(): Boolean {
         if (!state.scheduledTurnedOn) {
             logger.info("kikapcsolás")
             lastTurnOff = currentTime()
@@ -89,6 +91,12 @@ class VentilatorKonyha : AbstractDeviceConfig() {
             return true
         }
         return false
+    }
+
+    override fun toggle(): Boolean {
+        logger.info("átkapcsolás")
+        publish("cmnd/${state.mqttName}/power", "TOGGLE", false)
+        return true
     }
 
     fun scheduledPowerOn(): Boolean {

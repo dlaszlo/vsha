@@ -62,7 +62,7 @@ class KapcsoloUdvar : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("kikapcsolt")
                 state.powerOn = false
-                // clearTimeout(KapcsoloUdvar::powerOff)
+                clearTimeout(KapcsoloUdvar::powerOff)
             }
         }
     }

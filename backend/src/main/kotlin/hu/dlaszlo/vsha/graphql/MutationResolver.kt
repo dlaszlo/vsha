@@ -20,4 +20,9 @@ class MutationResolver : GraphQLMutationResolver {
         return applicationContext.getBean(deviceId, Switch::class.java).toggle()
     }
 
+    fun power(deviceId: String, powerOn: Boolean): Boolean {
+        var switch = applicationContext.getBean(deviceId, Switch::class.java)
+        return if (powerOn) switch.powerOn() else switch.powerOff()
+    }
+
 }

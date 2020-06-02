@@ -3,9 +3,9 @@ package hu.dlaszlo.vsha
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
+import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
 import hu.dlaszlo.vsha.graphql.SubscriptionResolver
-import hu.dlaszlo.vsha.graphql.dto.DeviceInfo
 import hu.dlaszlo.vsha.mqtt.Mqtt
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.influxdb.InfluxDB
@@ -33,6 +33,9 @@ class HomeAutomationService : Runnable {
     @Autowired
     lateinit var subscriptionResolver: SubscriptionResolver
 
+    @Autowired
+    lateinit var beeperService: BeeperService
+
     @Autowired(required = false)
     var influxDB: InfluxDB? = null
 
@@ -45,6 +48,7 @@ class HomeAutomationService : Runnable {
     override fun run() {
 
         banner()
+        beeperService.beep(500)
 
         if (influxDB != null) {
             influxDB!!.setDatabase(database)
@@ -71,10 +75,10 @@ class HomeAutomationService : Runnable {
                     val message = queue.poll()
 
                     logger.info(
-                        "         MQTT: topic = {}, payload = {}, retained = {}",
-                        message.topic,
-                        message.payload,
-                        message.isRetained
+                            "         MQTT: topic = {}, payload = {}, retained = {}",
+                            message.topic,
+                            message.payload,
+                            message.isRetained
                     )
 
                     for (device in deviceList) {
@@ -87,16 +91,15 @@ class HomeAutomationService : Runnable {
                                     try {
                                         val pl = JsonPath.parse(message.payload).read(subscribe.jsonPath) as String
                                         if (subscribe.payload == null && subscribe.payloadList.isNullOrEmpty()
-                                            || subscribe.payload != null && subscribe.payload.equals(pl, true)
-                                            || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(pl, true) }
+                                                || subscribe.payload != null && subscribe.payload.equals(pl, true)
+                                                || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(pl, true) }
                                         ) {
                                             subscribe.handler(pl)
-                                            if (device is Switch)
-                                            {
+                                            if (device is Switch) {
                                                 subscriptionResolver.updateDeviceInfo(device.device.deviceId,
-                                                    device.switchState.name,
-                                                    device.switchState.online,
-                                                    device.switchState.powerOn)
+                                                        device.switchState.name,
+                                                        device.switchState.online,
+                                                        device.switchState.powerOn)
                                             }
                                         }
                                     } catch (e: PathNotFoundException) {
@@ -104,16 +107,15 @@ class HomeAutomationService : Runnable {
                                     }
                                 } else {
                                     if (subscribe.payload == null && subscribe.payloadList.isNullOrEmpty()
-                                        || subscribe.payload != null && subscribe.payload.equals(message.payload, true)
-                                        || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(message.payload, true) }
+                                            || subscribe.payload != null && subscribe.payload.equals(message.payload, true)
+                                            || subscribe.payloadList != null && subscribe.payloadList!!.any { it.equals(message.payload, true) }
                                     ) {
                                         subscribe.handler(message.payload)
-                                        if (device is Switch)
-                                        {
+                                        if (device is Switch) {
                                             subscriptionResolver.updateDeviceInfo(device.device.deviceId,
-                                                device.switchState.name,
-                                                device.switchState.online,
-                                                device.switchState.powerOn)
+                                                    device.switchState.name,
+                                                    device.switchState.online,
+                                                    device.switchState.powerOn)
                                         }
                                     }
                                 }

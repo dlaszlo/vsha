@@ -1,22 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import gql from "graphql-tag";
-import {useMutation, useQuery, useSubscription} from "@apollo/react-hooks";
-import ReactDOM from 'react-dom';
+import {useMutation, useQuery} from "@apollo/react-hooks";
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min'
 import 'primereact/resources/themes/nova-light/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
-import * as serviceWorker from './serviceWorker';
-import {ApolloProvider} from 'react-apollo'
-import {ApolloClient} from 'apollo-client'
-import {BatchHttpLink} from 'apollo-link-batch-http'
-import {InMemoryCache} from 'apollo-cache-inmemory'
-import {BrowserRouter, Switch} from 'react-router-dom'
-import {ApolloLink, split} from "apollo-link";
-import {SubscriptionClient} from 'subscriptions-transport-ws'
-import {WebSocketLink} from 'apollo-link-ws'
-import {getMainDefinition} from 'apollo-utilities'
+import {InputSwitch} from 'primereact/inputswitch'
+import {Card} from 'primereact/card';
+import {Panel} from 'primereact/panel';
 
 const QUERY_DEVICE = gql`
     query GetState($deviceId: String!) {
@@ -46,21 +38,11 @@ const UPDATE_STATE = gql`
     }
 `
 
-const TOGGLE = gql`
-    mutation Toggle($deviceId: String!) {
-        toggle(deviceId: $deviceId)
+const POWER = gql`
+    mutation Toggle($deviceId: String!, $powerOn: Boolean!) {
+        power(deviceId: $deviceId, powerOn: $powerOn)
     }
 `
-
-const SwitchDisplay = ({name, online, powerOn}) => {
-    return (
-        <div>
-            {name ? name : ""} -
-            {online ? "Online" : "Offline"} -
-            {powerOn ? "Bekapcsolva" : "Kikapcsolva"}
-        </div>
-    )
-}
 
 const SwitchControl = ({deviceId, onClick}) => {
     const [powerOn, setPowerOn] = useState(false)
@@ -73,11 +55,7 @@ const SwitchControl = ({deviceId, onClick}) => {
         }
     })
 
-    const [toggle] = useMutation(TOGGLE, {
-        variables: {
-            deviceId
-        }
-    })
+    const [power] = useMutation(POWER)
 
     useEffect(() => {
         const unsubscribe = subscribeToMore({
@@ -94,13 +72,20 @@ const SwitchControl = ({deviceId, onClick}) => {
     }, [])
 
     return (
-        <div onClick={() =>
-            toggle()
-        }>
+        <>
             {data && data.getState &&
-            <SwitchDisplay name={data.getState.name} online={data.getState.online} powerOn={data.getState.powerOn}/>
+            <div>
+                {data.getState.name}
+                <InputSwitch checked={data.getState.powerOn} onChange={(e) => {
+                    power({
+                        variables: {
+                            deviceId, powerOn: e.value
+                        }
+                    }).then()
+                }}/>
+            </div>
             }
-        </div>
+        </>
     )
 
 }
@@ -109,8 +94,14 @@ const SwitchControl = ({deviceId, onClick}) => {
 const App = () => {
     return (
         <div className="App">
-            <SwitchControl deviceId="konnektorIroasztalLampa"/>
-            <SwitchControl deviceId="kapcsoloNappali"/>
+            <div className="container-fluid no-gutters p0">
+                <div className="content-wrapper d-flex flex-column flex-md-row">
+                    <Panel header="Nappali">
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                    </Panel>
+                </div>
+            </div>
         </div>
     )
 

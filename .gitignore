@@ -22,6 +22,8 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
+docker/setenv.bat
+
 **/npm-debug.log*
 **/yarn-debug.log*
 **/yarn-error.log*

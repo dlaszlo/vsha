@@ -1,3 +1,4 @@
+call setenv.bat
 cd ..
 call gradlew clean build --exclude-task test
 IF ERRORLEVEL 1 GOTO FINISH

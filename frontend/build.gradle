@@ -1,16 +1,20 @@
 plugins {
-    id "com.moowork.node" version "1.3.1"
+    id "com.github.node-gradle.node" version "2.2.1"
     id "java"
 }
 
-task buildFrontend(type: YarnTask) {
-    args = ['run', 'build']
+node {
+    download = true
 }
-tasks.buildFrontend.dependsOn yarn_install
+
+task buildFrontend(type: NpmTask) {
+    args = ["run", "build"]
+}
+tasks.buildFrontend.dependsOn npmInstall
 
 processResources {
-    from('build/') {
-        into 'public'
+    from("build/") {
+        into "public"
     }
 }
 tasks.processResources.dependsOn buildFrontend

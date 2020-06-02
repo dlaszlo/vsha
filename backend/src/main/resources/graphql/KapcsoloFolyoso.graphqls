@@ -12,6 +12,7 @@ type Query {
 type Mutation {
     updateState(deviceId: String!): Boolean!
     toggle(deviceId: String!): Boolean!
+    power(deviceId: String!, powerOn: Boolean!): Boolean!
 }
 
 type Subscription {

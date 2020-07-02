@@ -47,7 +47,6 @@ class HomeAutomationService : Runnable {
 
     override fun run() {
 
-        banner()
         beeperService.beep(500)
 
         if (influxDB != null) {
@@ -148,16 +147,6 @@ class HomeAutomationService : Runnable {
                 }
             }
         }
-    }
-
-    fun banner() {
-        logger.info("")
-        logger.info("  _  _                   _       _                  _   _                    ")
-        logger.info(" | || |___ _ __  ___    /_\\ _  _| |_ ___ _ __  __ _| |_(_)___ _ _           ")
-        logger.info(" | __ / _ \\ '  \\/ -_)  / _ \\ || |  _/ _ \\ '  \\/ _` |  _| / _ \\ ' \\    ")
-        logger.info(" |_||_\\___/_|_|_\\___| /_/ \\_\\_,_|\\__\\___/_|_|_\\__,_|\\__|_\\___/_||_| ")
-        logger.info("                                                        version 1.0")
-        logger.info("")
     }
 
     @PostConstruct

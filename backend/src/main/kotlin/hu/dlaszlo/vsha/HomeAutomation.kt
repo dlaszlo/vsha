@@ -12,8 +12,6 @@ class HomeAutomation
 val logger = LoggerFactory.getLogger(HomeAutomation::class.java)!!
 
 fun main(args: Array<String>) {
-    runApplication<HomeAutomation>(*args) {
-        setBannerMode(Banner.Mode.OFF)
-    }
+    runApplication<HomeAutomation>(*args)
 }
 

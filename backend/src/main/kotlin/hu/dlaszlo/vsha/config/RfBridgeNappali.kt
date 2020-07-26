@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class RfBridgeNappali : AbstractDeviceConfig() {
 
     data class DeviceState(
-        val mqttName: String = "nappali-rfbridge",
-        val name: String = "Nappali RF-bridge ($mqttName)",
-        var online: Boolean = false
+            val mqttName: String = "nappali-rfbridge",
+            val name: String = "Nappali RF-bridge ($mqttName)",
+            var online: Boolean = false
     )
 
     var state = DeviceState()

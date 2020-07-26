@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.graphql.SubscriptionResolver
 import hu.dlaszlo.vsha.mqtt.Mqtt
+import hu.dlaszlo.vsha.sunsetsunrise.SunsetSunriseService
 import hu.dlaszlo.vsha.telegram.TelegramService
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +27,12 @@ abstract class AbstractDeviceConfig {
 
     @Autowired
     lateinit var telegramService: TelegramService
+
+    @Autowired
+    lateinit var beeperService: BeeperService
+
+    @Autowired
+    lateinit var sunsetSunriseService: SunsetSunriseService
 
     @Autowired
     lateinit var subscriptions : SubscriptionResolver

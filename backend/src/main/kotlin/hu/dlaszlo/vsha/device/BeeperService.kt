@@ -14,7 +14,7 @@ class BeeperService {
     @Value("\${beeper.enabled}")
     private var beeperEnabled: Boolean = false
 
-    @Value("21")
+    @Value("\${beeper.pin.number}")
     private var beeperPinNumber: String = "21"
 
     fun beep(vararg delaysInMillis: Long) {

@@ -1,26 +1,21 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
-import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
 import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("kapcsoloFolyoso")
 class KapcsoloFolyoso : AbstractDeviceConfig(), Switch {
 
-    @Autowired
-    lateinit var beeperService: BeeperService
-
     data class DeviceState(
-        val mqttName: String = "folyoso-kapcsolo",
-        override var name: String = "Folyosó lámpakapcsoló ($mqttName)",
-        var lastPowerOff: Long = 0,
-        var automaticPowerOff: Boolean = false,
-        var forcedPowerOn: Boolean = false,
-        var delayedPowerOn: Boolean = false
+            val mqttName: String = "folyoso-kapcsolo",
+            override var name: String = "Folyosó lámpakapcsoló ($mqttName)",
+            var lastPowerOff: Long = 0,
+            var automaticPowerOff: Boolean = false,
+            var forcedPowerOn: Boolean = false,
+            var delayedPowerOn: Boolean = false
     ) : SwitchState()
 
     var state = DeviceState()
@@ -134,7 +129,7 @@ class KapcsoloFolyoso : AbstractDeviceConfig(), Switch {
             true
         } else {
             logger.info("nem kapcsolható be jelenleg, hátralévő idő: {} s",
-                (minutes(1) + state.lastPowerOff - time) / 1000)
+                    (minutes(1) + state.lastPowerOff - time) / 1000)
             false
         }
     }

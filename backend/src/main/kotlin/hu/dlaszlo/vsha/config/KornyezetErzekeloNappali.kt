@@ -10,12 +10,11 @@ import java.util.concurrent.TimeUnit
 class KornyezetErzekeloNappali : AbstractDeviceConfig() {
 
     data class DeviceState(
-        val mqttName: String = "ambs2",
-        val name: String = "Környezet érzékelő nappali ($mqttName)"
+            val mqttName: String = "ambs2",
+            val name: String = "Környezet érzékelő nappali ($mqttName)"
     )
 
     var state = DeviceState()
-
 
     override var device = device {
 
@@ -44,27 +43,27 @@ class KornyezetErzekeloNappali : AbstractDeviceConfig() {
                 val stabStatus: Int = jsonValue(payload, "$.stabStatus")!!
 
                 influxDB.write(
-                    Point.measurement("ambs2")
-                        .time(currentTime(), TimeUnit.MILLISECONDS)
-                        .addField("pressure", pressure)
-                        .addField("gasResistance", gasResistance)
-                        .addField("iaq", iaq)
-                        .addField("iaqAccuracy", iaqAccuracy)
-                        .addField("temperature", temperature)
-                        .addField("humidity", humidity)
-                        .addField("dewPointTemperature", dewPointTemperature)
-                        .addField("breathVocEquivalent", breathVocEquivalent)
-                        .addField("breathVocAccuracy", breathVocAccuracy)
-                        .addField("co2Equivalent", co2Equivalent)
-                        .addField("co2Accuracy", co2Accuracy)
-                        .addField("compGasValue", compGasValue)
-                        .addField("compGasAccuracy", compGasAccuracy)
-                        .addField("gasPercentage", gasPercentage)
-                        .addField("gasPercentageAcccuracy", gasPercentageAcccuracy)
-                        .addField("staticIaq", staticIaq)
-                        .addField("staticIaqAccuracy", staticIaqAccuracy)
-                        .addField("stabStatus", stabStatus)
-                        .build()
+                        Point.measurement("ambs2")
+                                .time(currentTime(), TimeUnit.MILLISECONDS)
+                                .addField("pressure", pressure)
+                                .addField("gasResistance", gasResistance)
+                                .addField("iaq", iaq)
+                                .addField("iaqAccuracy", iaqAccuracy)
+                                .addField("temperature", temperature)
+                                .addField("humidity", humidity)
+                                .addField("dewPointTemperature", dewPointTemperature)
+                                .addField("breathVocEquivalent", breathVocEquivalent)
+                                .addField("breathVocAccuracy", breathVocAccuracy)
+                                .addField("co2Equivalent", co2Equivalent)
+                                .addField("co2Accuracy", co2Accuracy)
+                                .addField("compGasValue", compGasValue)
+                                .addField("compGasAccuracy", compGasAccuracy)
+                                .addField("gasPercentage", gasPercentage)
+                                .addField("gasPercentageAcccuracy", gasPercentageAcccuracy)
+                                .addField("staticIaq", staticIaq)
+                                .addField("staticIaqAccuracy", staticIaqAccuracy)
+                                .addField("stabStatus", stabStatus)
+                                .build()
                 )
             }
         }

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 class VentilatorKonyha : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-        var mqttName: String = "konyha-ventilator",
-        var scheduledTurnedOn: Boolean = false,
-        override var name: String = "Konyha ventilator ($mqttName)"
+            var mqttName: String = "konyha-ventilator",
+            var scheduledTurnedOn: Boolean = false,
+            override var name: String = "Konyha ventilator ($mqttName)"
     ) : SwitchState()
 
     var state = DeviceState()

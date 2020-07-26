@@ -1,22 +1,17 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.device.AbstractDeviceConfig
-import hu.dlaszlo.vsha.device.BeeperService
 import hu.dlaszlo.vsha.device.Switch
 import hu.dlaszlo.vsha.device.SwitchState
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component("kapcsoloKamra")
 class KapcsoloKamra : AbstractDeviceConfig(), Switch {
 
-    @Autowired
-    lateinit var beeperService: BeeperService
-
     data class DeviceState(
-        val mqttName: String = "kamra-kapcsolo",
-        override var name: String = "Kamra lámpakapcsoló ($mqttName)"
+            val mqttName: String = "kamra-kapcsolo",
+            override var name: String = "Kamra lámpakapcsoló ($mqttName)"
     ) : SwitchState()
 
     var state = DeviceState()

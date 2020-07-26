@@ -1,6 +1,10 @@
 # Otthon automatizálás
 
-@@@ TODO 
+@@@ TODO
+
+## A rendszer felépítése
+
+![Image of Yaktocat](docs/system_components.png)
 
 ## Üzenetküldés bekonfigurálása
 

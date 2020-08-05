@@ -22,7 +22,9 @@ dependencies {
 
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     api "org.jetbrains.kotlin:kotlin-reflect"
-    api 'org.springframework.boot:spring-boot-starter-web'
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "org.springframework.boot:spring-boot-starter-integration"
+    api "org.springframework.integration:spring-integration-mqtt"
     api "com.fasterxml.jackson.module:jackson-module-kotlin"
     api "org.apache.commons:commons-lang3"
     api "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$paho_mqtt_version"

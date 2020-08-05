@@ -3,11 +3,13 @@ package hu.dlaszlo.vsha.device
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.graphql.SubscriptionResolver
-import hu.dlaszlo.vsha.mqtt.Mqtt
+import hu.dlaszlo.vsha.MqttConfiguration
+import hu.dlaszlo.vsha.mqtt.MqttService
 import hu.dlaszlo.vsha.sunsetsunrise.SunsetSunriseService
 import hu.dlaszlo.vsha.telegram.TelegramService
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -16,14 +18,15 @@ import kotlin.math.ln
 
 abstract class AbstractDeviceConfig {
 
-    @Autowired
-    lateinit var mqtt: Mqtt
 
     @Autowired
     lateinit var applicationContext: ApplicationContext
 
     @Autowired(required = false)
     lateinit var influxDB: InfluxDB
+
+    @Autowired
+    lateinit var mqttService: MqttService
 
     @Autowired
     lateinit var telegramService: TelegramService
@@ -42,7 +45,7 @@ abstract class AbstractDeviceConfig {
     val schedulerList = mutableListOf<Scheduler<out AbstractDeviceConfig>>()
 
     protected fun publish(topic: String, payload: String, retained: Boolean) {
-        mqtt.publish(topic, payload, retained)
+        mqttService.publish(topic, payload, retained)
     }
 
     fun device(dev: Device.() -> Unit): Device = Device().apply(dev)

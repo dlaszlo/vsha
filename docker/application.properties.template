@@ -5,6 +5,8 @@ mqtt.clientId = xxxx
 mqtt.username = xxxx
 mqtt.password = xxxx
 mqtt.keepAliveInterval = 30
+mqtt.completionTimeout = 30000
+mqtt.recoveryInterval = 10000
 
 spring.influx.database = xxxx
 spring.influx.retentionPolicy = xxxx

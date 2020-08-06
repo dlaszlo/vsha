@@ -1,6 +1,6 @@
 package hu.dlaszlo.vsha.mqtt
 
-import hu.dlaszlo.vsha.MqttConfiguration
+import hu.dlaszlo.vsha.Configuration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -20,10 +20,10 @@ class MqttService {
     val queue: ConcurrentLinkedQueue<MqttMessage> = ConcurrentLinkedQueue()
 
     @Autowired
-    lateinit var mqttGateway: MqttConfiguration.MqttGateway
+    lateinit var gateway: Configuration.MqttGateway
 
     fun publish(topic: String, payload: String, retained: Boolean) {
-        mqttGateway.send(topic, retained, qos, payload)
+        gateway.send(topic, retained, qos, payload)
     }
 
     @ServiceActivator(inputChannel = "mqttInputChannel")
@@ -38,7 +38,7 @@ class MqttService {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(MqttConfiguration::class.java)!!
+        val logger = LoggerFactory.getLogger(Configuration::class.java)!!
     }
 
 }

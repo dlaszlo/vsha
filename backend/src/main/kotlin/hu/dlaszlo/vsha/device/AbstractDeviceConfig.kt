@@ -3,13 +3,11 @@ package hu.dlaszlo.vsha.device
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.graphql.SubscriptionResolver
-import hu.dlaszlo.vsha.MqttConfiguration
 import hu.dlaszlo.vsha.mqtt.MqttService
 import hu.dlaszlo.vsha.sunsetsunrise.SunsetSunriseService
 import hu.dlaszlo.vsha.telegram.TelegramService
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationContext
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -38,7 +36,7 @@ abstract class AbstractDeviceConfig {
     lateinit var sunsetSunriseService: SunsetSunriseService
 
     @Autowired
-    lateinit var subscriptions : SubscriptionResolver
+    lateinit var subscriptions: SubscriptionResolver
 
     abstract var device: Device
 
@@ -99,7 +97,7 @@ abstract class AbstractDeviceConfig {
         return TimeUnit.SECONDS.toMillis(seconds)
     }
 
-    inline fun <reified T : AbstractDeviceConfig> getDevice() : T {
+    inline fun <reified T : AbstractDeviceConfig> getDevice(): T {
         return applicationContext.getBean(T::class.java)
     }
 

@@ -5,7 +5,7 @@ IF ERRORLEVEL 1 GOTO FINISH
 ECHO error level is %ERRORLEVEL%
 cd docker
 del vsha.jar
-copy ..\backend\build\libs\vsha.jar .\vsha.jar
+copy ..\config\build\libs\vsha.jar .\vsha.jar
 IF ERRORLEVEL 1 GOTO FINISH
 docker stop homeautomation
 IF ERRORLEVEL 1 GOTO FINISH

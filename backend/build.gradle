@@ -6,7 +6,6 @@ plugins {
 apply plugin: "java-library"
 apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
-apply plugin: "org.springframework.boot"
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
@@ -48,12 +47,3 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "11"
 }
-
-bootJar {
-    archiveFileName = "vsha.jar"
-    mainClassName = "hu.dlaszlo.vsha.HomeAutomationKt"
-    exclude "application.properties.template"
-    exclude "application.properties"
-    exclude "logback.xml"
-}
-

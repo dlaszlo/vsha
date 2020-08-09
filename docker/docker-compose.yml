@@ -1,9 +1,10 @@
-version: '3'
+version: '3.8'
 services:
 
   homeautomation:
     container_name: homeautomation
     build: homeautomation
+    restart: always
     volumes:
       - "/sys:/sys"
       - "/storage/homeautomation/log:/var/log/homeautomation"
@@ -27,6 +28,7 @@ services:
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
+    restart: always
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -39,6 +41,7 @@ services:
   influxdb:
     container_name: influxdb
     image: influxdb
+    restart: always
     volumes:
       - "/storage/influxdb:/var/lib/influxdb"
       - "/storage/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
@@ -47,6 +50,7 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana
+    restart: always
     volumes:
       - "/storage/grafana/grafana:/var/lib/grafana"
       - "/storage/grafana/etc:/etc/grafana"
@@ -60,6 +64,7 @@ services:
   nginx:
     build: nginx
     container_name: nginx
+    restart: always
     ports:
       - "80:80"
     depends_on:

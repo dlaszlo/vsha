@@ -10,10 +10,10 @@ import javax.annotation.PostConstruct
 @Service
 class TelegramService {
 
-    @Value("\${telegram.bot_token}")
+    @Value("\${telegram.botToken}")
     private lateinit var botToken: String
 
-    @Value("\${telegram.chat_id}")
+    @Value("\${telegram.chatId}")
     private var chatId: Long = 0
 
     var bot: TelegramBot? = null

@@ -29,8 +29,7 @@ compileTestKotlin {
 bootJar {
     archiveFileName = "vsha.jar"
     mainClassName = "hu.dlaszlo.vsha.config.HomeAutomationKt"
-    exclude "application.properties.template"
-    exclude "application.properties"
+    exclude "application.yml"
     exclude "logback.xml"
 }
 

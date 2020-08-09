@@ -4,8 +4,6 @@ services:
   homeautomation:
     container_name: homeautomation
     build: homeautomation
-    ports:
-      - "8080:8080"
     volumes:
       - "/sys:/sys"
       - "/storage/homeautomation/log:/var/log/homeautomation"
@@ -13,6 +11,18 @@ services:
       - mosquitto
     environment:
       - TZ=Europe/Budapest
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+      - SPRING_INFLUX_USER=${SPRING_INFLUX_USER}
+      - SPRING_INFLUX_PASSWORD=${SPRING_INFLUX_PASSWORD}
+      - BEEPER_ENABLED=${BEEPER_ENABLED}
+      - BEEPER_PINNUMBER=${BEEPER_PINNUMBER}
+      - SUNSETSUNRISE_ZENITH=${SUNSETSUNRISE_ZENITH}
+      - SUNSETSUNRISE_LATITUDE=${SUNSETSUNRISE_LATITUDE}
+      - SUNSETSUNRISE_LONGITUDE=${SUNSETSUNRISE_LONGITUDE}
+      - SUNSETSUNRISE_TIMEZONE=${SUNSETSUNRISE_TIMEZONE}
+      - TELEGRAM_BOTTOKEN=${TELEGRAM_BOTTOKEN}
+      - TELEGRAM_CHATID=${TELEGRAM_CHATID}
 
   mosquitto:
     container_name: mosquitto
@@ -29,8 +39,6 @@ services:
   influxdb:
     container_name: influxdb
     image: influxdb
-    ports:
-      - "8086:8086"
     volumes:
       - "/storage/influxdb:/var/lib/influxdb"
       - "/storage/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro"
@@ -39,8 +47,6 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana
-    ports:
-      - "3000:3000"
     volumes:
       - "/storage/grafana/grafana:/var/lib/grafana"
       - "/storage/grafana/etc:/etc/grafana"
@@ -50,3 +56,13 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
       - GF_AUTH_ANONYMOUS_ENABLED=true
+
+  nginx:
+    build: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - grafana
+      - homeautomation
+

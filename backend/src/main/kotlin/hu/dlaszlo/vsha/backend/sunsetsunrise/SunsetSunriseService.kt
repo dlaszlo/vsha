@@ -9,16 +9,16 @@ import kotlin.math.*
 @Component
 class SunsetSunriseService {
 
-    @Value("\${longitude}")
+    @Value("\${sunsetsunrise.longitude}")
     var longitude: Double = 0.0
 
-    @Value("\${latitude}")
+    @Value("\${sunsetsunrise.latitude}")
     var latitude: Double = 0.0
 
-    @Value("\${timeZone}")
+    @Value("\${sunsetsunrise.timeZone}")
     lateinit var timeZone: String
 
-    @Value("\${zenith}")
+    @Value("\${sunsetsunrise.zenith}")
     lateinit var zenith: Zenith
 
     private fun adjust(d: Double, min: Double, max: Double): Double {

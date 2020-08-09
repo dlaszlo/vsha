@@ -1,0 +1,31 @@
+spring:
+  influx:
+    database: homeautomation
+    retentionPolicy: a_year
+    url: http://influxdb:8086
+    user: xxx
+    password: xxx
+
+mqtt:
+  qos: 0
+  broker: tcp://mosquitto:1883
+  clientId: HomeAutomation
+  username: xxx
+  password: xxx
+  keepAliveInterval: 30
+  completionTimeout: 30000
+  recoveryInterval: 10000
+
+beeper:
+  enabled: true
+  pinNumber: 21
+
+sunsetsunrise:
+  zenith: OFFICIAL
+  latitude: 0.00
+  longitude: 0.00
+  timeZone: Europe/Budapest
+
+telegram:
+  botToken: xxx
+  chatId: = xxx

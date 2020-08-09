@@ -6,7 +6,6 @@ backend/.gradle
 backend/build
 backend/out
 
-**/application.properties
 **/vsha.jar
 
 frontend/.gradle

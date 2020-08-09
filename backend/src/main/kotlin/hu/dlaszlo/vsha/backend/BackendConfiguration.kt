@@ -1,8 +1,8 @@
 package hu.dlaszlo.vsha.backend
 
+import graphql.kickstart.servlet.apollo.ApolloScalars
 import graphql.scalars.ExtendedScalars
 import graphql.schema.GraphQLScalarType
-import graphql.servlet.apollo.ApolloScalars
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,6 +1,6 @@
 package hu.dlaszlo.vsha.backend.graphql
 
-import com.coxautodev.graphql.tools.GraphQLSubscriptionResolver
+import graphql.kickstart.tools.GraphQLSubscriptionResolver
 import hu.dlaszlo.vsha.backend.graphql.dto.DeviceInfo
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable

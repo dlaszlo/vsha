@@ -1,6 +1,6 @@
 package hu.dlaszlo.vsha.backend.graphql
 
-import com.coxautodev.graphql.tools.GraphQLQueryResolver
+import graphql.kickstart.tools.GraphQLQueryResolver
 import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.backend.device.Switch
 import hu.dlaszlo.vsha.backend.graphql.dto.DeviceInfo

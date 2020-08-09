@@ -1,6 +1,6 @@
 package hu.dlaszlo.vsha.backend.graphql
 
-import com.coxautodev.graphql.tools.GraphQLMutationResolver
+import graphql.kickstart.tools.GraphQLMutationResolver
 import hu.dlaszlo.vsha.backend.device.Switch
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext

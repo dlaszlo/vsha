@@ -11,7 +11,7 @@ class KornyezetErzekeloNappali : AbstractDeviceConfig() {
 
     data class DeviceState(
             val mqttName: String = "ambs2",
-            val name: String = "Környezet érzékelő nappali ($mqttName)"
+            val name: String = "Környezet érzékelő nappali"
     )
 
     var state = DeviceState()

@@ -12,7 +12,7 @@ class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
     data class DeviceState(
             val mqttName1: String = "konyha-rfbridge",
             val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Folyosó ajtónyitás érzékelő ($mqttName1, $mqttName2)",
+            val name: String = "Folyosó ajtónyitás érzékelő",
             var doorOpened: Boolean = false
     )
 

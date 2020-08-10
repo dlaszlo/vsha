@@ -11,7 +11,7 @@ class KapcsoloNappali : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
             val mqttName: String = "nappali-kapcsolo",
-            override var name: String = "Nappali lámpakapcsoló ($mqttName)",
+            override var name: String = "Nappali lámpakapcsoló",
             var longPressPowerOn: Boolean = false
     ) : SwitchState()
 

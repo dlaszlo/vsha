@@ -12,7 +12,7 @@ class ErzekeloVizelfolyasMosogep : AbstractDeviceConfig() {
     data class DeviceState(
             val mqttName1: String = "konyha-rfbridge",
             val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Vízelfolyás érzékelő - mosógép ($mqttName1)"
+            val name: String = "Vízelfolyás érzékelő - mosógép"
     )
 
     var state = DeviceState()

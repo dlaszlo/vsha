@@ -12,7 +12,7 @@ class KapcsoloIroasztalLampa : AbstractDeviceConfig() {
     data class DeviceState(
             val mqttName1: String = "konyha-rfbridge",
             val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Íróasztal lámpa kapcsoló ($mqttName1, $mqttName2)"
+            val name: String = "Íróasztal lámpa kapcsoló"
     )
 
     var state = DeviceState()

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component
 class KapcsoloTerasz : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-            val mqttName: String = "eloszoba-kapcsolo",
-            override var name: String = "Terasz lámpakapcsoló ($mqttName)"
+        val mqttName: String = "eloszoba-kapcsolo",
+        override var name: String = "Terasz lámpakapcsoló ($mqttName)"
     ) : SwitchState()
 
     var state = DeviceState()

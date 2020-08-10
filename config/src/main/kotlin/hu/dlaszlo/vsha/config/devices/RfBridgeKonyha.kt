@@ -10,7 +10,7 @@ class RfBridgeKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
             val mqttName: String = "konyha-rfbridge",
-            val name: String = "Konyha RF-bridge ($mqttName)",
+            val name: String = "Konyha RF-bridge",
             var online: Boolean = false
     )
 

@@ -6,9 +6,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min'
 import 'primereact/resources/themes/nova-light/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
+import './App.css'
 import {InputSwitch} from 'primereact/inputswitch'
 import {Card} from 'primereact/card';
 import {Panel} from 'primereact/panel';
+import {Navbar, NavbarBrand} from "react-bootstrap";
 
 const QUERY_DEVICE = gql`
     query GetState($deviceId: String!) {
@@ -74,15 +76,19 @@ const SwitchControl = ({deviceId, onClick}) => {
     return (
         <>
             {data && data.getState &&
-            <div>
-                {data.getState.name}
-                <InputSwitch checked={data.getState.powerOn} onChange={(e) => {
-                    power({
-                        variables: {
-                            deviceId, powerOn: e.value
-                        }
-                    }).then()
-                }}/>
+            <div className="d-flex flex-row-reverse">
+                <div className="p-2">
+                    <InputSwitch checked={data.getState.powerOn} onChange={(e) => {
+                        power({
+                            variables: {
+                                deviceId, powerOn: e.value
+                            }
+                        }).then()
+                    }}/>
+                </div>
+                <div className="p-2 font-weight-bold">
+                    {data.getState.name}
+                </div>
             </div>
             }
         </>
@@ -94,12 +100,36 @@ const SwitchControl = ({deviceId, onClick}) => {
 const App = () => {
     return (
         <div className="App">
-            <div className="container-fluid no-gutters p0">
-                <div className="content-wrapper d-flex flex-column flex-md-row">
+            <Navbar bg="dark" variant="dark">
+                <Navbar.Brand href="/">Home automation</Navbar.Brand>
+            </Navbar>
+            <div className="container-fluid">
+                <div className="d-flex align-content-around flex-wrap">
+                    <Panel header="Nappali">
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                    </Panel>
+                    <Panel header="Nappali">
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                    </Panel>
                     <Panel header="Nappali">
                         <SwitchControl deviceId="konnektorIroasztalLampa"/>
                         <SwitchControl deviceId="kapcsoloNappali"/>
                     </Panel>
+                    <Panel header="Nappali">
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                    </Panel>
+                    <Panel header="Nappali">
+                        <SwitchControl deviceId="konnektorIroasztalLampa"/>
+                        <SwitchControl deviceId="kapcsoloNappali"/>
+                    </Panel>
+                </div>
+                <div className="content-wrapper d-flex flex-column flex-md-row">
                 </div>
             </div>
         </div>

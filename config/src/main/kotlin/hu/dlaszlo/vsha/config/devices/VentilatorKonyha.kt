@@ -12,7 +12,7 @@ class VentilatorKonyha : AbstractDeviceConfig(), Switch {
     data class DeviceState(
             var mqttName: String = "konyha-ventilator",
             var scheduledTurnedOn: Boolean = false,
-            override var name: String = "Konyha ventilator ($mqttName)"
+            override var name: String = "Konyha ventilator"
     ) : SwitchState()
 
     var state = DeviceState()

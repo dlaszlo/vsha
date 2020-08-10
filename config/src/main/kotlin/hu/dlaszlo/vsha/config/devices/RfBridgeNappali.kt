@@ -10,7 +10,7 @@ class RfBridgeNappali : AbstractDeviceConfig() {
 
     data class DeviceState(
             val mqttName: String = "nappali-rfbridge",
-            val name: String = "Nappali RF-bridge ($mqttName)",
+            val name: String = "Nappali RF-bridge",
             var online: Boolean = false
     )
 

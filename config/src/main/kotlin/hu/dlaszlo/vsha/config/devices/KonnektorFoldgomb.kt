@@ -11,7 +11,7 @@ class KonnektorFoldgomb : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
             val mqttName: String = "foldgomb-konnektor",
-            override var name: String = "Földgömb konnektor ($mqttName)"
+            override var name: String = "Földgömb konnektor"
     ) : SwitchState()
 
     var state = DeviceState()

@@ -11,7 +11,7 @@ class KapcsoloFolyoso : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
             val mqttName: String = "folyoso-kapcsolo",
-            override var name: String = "Folyosó lámpakapcsoló ($mqttName)",
+            override var name: String = "Folyosó lámpakapcsoló",
             var lastPowerOff: Long = 0,
             var automaticPowerOff: Boolean = false,
             var forcedPowerOn: Boolean = false,

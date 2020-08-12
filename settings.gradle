@@ -1,5 +1,4 @@
 include "backend"
-include "frontend"
 include "config"
 
 rootProject.name = 'vsha'

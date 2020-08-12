@@ -17,8 +17,6 @@ repositories {
 dependencies {
     api platform("org.springframework.boot:spring-boot-dependencies:$spring_boot_version")
 
-    api project(":frontend")
-
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     api "org.jetbrains.kotlin:kotlin-reflect"
     api "org.springframework.boot:spring-boot-starter-web"

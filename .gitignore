@@ -30,3 +30,4 @@ docker/setenv.bat
 /docker/cert/ca.pem
 /docker/cert/cert.pem
 /docker/cert/key.pem
+/docker/nginx/www/

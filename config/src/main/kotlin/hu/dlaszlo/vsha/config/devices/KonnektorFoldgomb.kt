@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component
 class KonnektorFoldgomb : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-            val mqttName: String = "foldgomb-konnektor",
-            override var name: String = "Földgömb konnektor"
+        override var displayOrder: Int = 210,
+        override var groupName: String = "Gyerekszoba",
+        override var mqttName: String = "foldgomb-konnektor",
+        override var name: String = "Földgömb"
     ) : SwitchState()
 
     var state = DeviceState()

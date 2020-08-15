@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component
 class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-            val mqttName: String = "konyha-kapcsolo",
-            override var name: String = "Konyhapult lámpakapcsoló",
-            var lastPowerOff: Long = 0,
-            var automaticPowerOff: Boolean = false,
-            var forcedPowerOn: Boolean = false,
-            var delayedPowerOn: Boolean = false
+        override var displayOrder: Int = 610,
+        override var groupName: String = "Konyha",
+        override var mqttName: String = "konyha-kapcsolo",
+        override var name: String = "Konyhapult",
+        var lastPowerOff: Long = 0,
+        var automaticPowerOff: Boolean = false,
+        var forcedPowerOn: Boolean = false,
+        var delayedPowerOn: Boolean = false
     ) : SwitchState()
 
     var state = DeviceState()
@@ -128,8 +130,10 @@ class KapcsoloKonyhapult : AbstractDeviceConfig(), Switch {
             publish("cmnd/${state.mqttName}/power2", "ON", false)
             true
         } else {
-            logger.info("nem kapcsolható be jelenleg, hátralévő idő: {} s",
-                    (minutes(1) + state.lastPowerOff - time) / 1000)
+            logger.info(
+                "nem kapcsolható be jelenleg, hátralévő idő: {} s",
+                (minutes(1) + state.lastPowerOff - time) / 1000
+            )
             false
         }
     }

@@ -10,9 +10,9 @@ import java.util.Arrays.asList
 class KapcsoloIroasztalLampa : AbstractDeviceConfig() {
 
     data class DeviceState(
-            val mqttName1: String = "konyha-rfbridge",
-            val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Íróasztal lámpa kapcsoló"
+        val mqttName1: String = "konyha-rfbridge",
+        val mqttName2: String = "nappali-rfbridge",
+        val name: String = "Íróasztal kapcsoló"
     )
 
     var state = DeviceState()

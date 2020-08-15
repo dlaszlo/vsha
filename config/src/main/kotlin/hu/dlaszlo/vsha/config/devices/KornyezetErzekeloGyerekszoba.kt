@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit
 class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
 
     data class DeviceState(
-            val mqttName: String = "ambs1",
-            val name: String = "Környezet érzékelő gyerekszoba"
+        val mqttName: String = "ambs1",
+        val name: String = "Környezet érzékelő"
     )
 
     var state = DeviceState()
@@ -43,27 +43,27 @@ class KornyezetErzekeloGyerekszoba : AbstractDeviceConfig() {
                 val stabStatus: Int = jsonValue(payload, "$.stabStatus")!!
 
                 influxDB.write(
-                        Point.measurement("ambs1")
-                                .time(currentTime(), TimeUnit.MILLISECONDS)
-                                .addField("pressure", pressure)
-                                .addField("gasResistance", gasResistance)
-                                .addField("iaq", iaq)
-                                .addField("iaqAccuracy", iaqAccuracy)
-                                .addField("temperature", temperature)
-                                .addField("humidity", humidity)
-                                .addField("dewPointTemperature", dewPointTemperature)
-                                .addField("breathVocEquivalent", breathVocEquivalent)
-                                .addField("breathVocAccuracy", breathVocAccuracy)
-                                .addField("co2Equivalent", co2Equivalent)
-                                .addField("co2Accuracy", co2Accuracy)
-                                .addField("compGasValue", compGasValue)
-                                .addField("compGasAccuracy", compGasAccuracy)
-                                .addField("gasPercentage", gasPercentage)
-                                .addField("gasPercentageAcccuracy", gasPercentageAcccuracy)
-                                .addField("staticIaq", staticIaq)
-                                .addField("staticIaqAccuracy", staticIaqAccuracy)
-                                .addField("stabStatus", stabStatus)
-                                .build()
+                    Point.measurement("ambs1")
+                        .time(currentTime(), TimeUnit.MILLISECONDS)
+                        .addField("pressure", pressure)
+                        .addField("gasResistance", gasResistance)
+                        .addField("iaq", iaq)
+                        .addField("iaqAccuracy", iaqAccuracy)
+                        .addField("temperature", temperature)
+                        .addField("humidity", humidity)
+                        .addField("dewPointTemperature", dewPointTemperature)
+                        .addField("breathVocEquivalent", breathVocEquivalent)
+                        .addField("breathVocAccuracy", breathVocAccuracy)
+                        .addField("co2Equivalent", co2Equivalent)
+                        .addField("co2Accuracy", co2Accuracy)
+                        .addField("compGasValue", compGasValue)
+                        .addField("compGasAccuracy", compGasAccuracy)
+                        .addField("gasPercentage", gasPercentage)
+                        .addField("gasPercentageAcccuracy", gasPercentageAcccuracy)
+                        .addField("staticIaq", staticIaq)
+                        .addField("staticIaqAccuracy", staticIaqAccuracy)
+                        .addField("stabStatus", stabStatus)
+                        .build()
                 )
             }
         }

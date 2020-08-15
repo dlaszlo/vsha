@@ -1,12 +1,23 @@
 type DeviceInfo {
     deviceId: String!
+    displayOrder: Int!
+    groupName: String!
+    mqttName: String!
     name: String!
     online: Boolean!
     powerOn: Boolean!
 }
 
+type DeviceGroup {
+    displayOrder: Int!
+    groupName: String!
+    devices: [DeviceInfo!]!
+}
+
+
 type Query {
     getState(deviceId: String!): DeviceInfo!
+    getGroups: [DeviceGroup!]!
 }
 
 type Mutation {

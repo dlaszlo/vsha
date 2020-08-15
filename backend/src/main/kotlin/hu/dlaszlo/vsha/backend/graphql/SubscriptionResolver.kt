@@ -1,6 +1,7 @@
 package hu.dlaszlo.vsha.backend.graphql
 
 import graphql.kickstart.tools.GraphQLSubscriptionResolver
+import hu.dlaszlo.vsha.backend.device.SwitchState
 import hu.dlaszlo.vsha.backend.graphql.dto.DeviceInfo
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -27,12 +28,15 @@ class SubscriptionResolver : GraphQLSubscriptionResolver {
         publisher = connectableObservable.toFlowable(BackpressureStrategy.BUFFER)
     }
 
-    fun updateDeviceInfo(deviceId: String, name: String, online: Boolean, powerOn: Boolean) {
+    fun updateDeviceInfo(deviceId: String, state: SwitchState) {
         val deviceInfo = DeviceInfo(
             deviceId,
-            name,
-            online,
-            powerOn
+            state.displayOrder,
+            state.groupName,
+            state.mqttName,
+            state.name,
+            state.online,
+            state.powerOn
         )
         emitter?.onNext(deviceInfo)
     }

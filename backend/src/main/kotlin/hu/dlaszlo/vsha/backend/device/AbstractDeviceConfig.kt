@@ -16,7 +16,6 @@ import kotlin.math.ln
 
 abstract class AbstractDeviceConfig {
 
-
     @Autowired
     lateinit var applicationContext: ApplicationContext
 

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component
 class VentilatorKonyha : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-            var mqttName: String = "konyha-ventilator",
-            var scheduledTurnedOn: Boolean = false,
-            override var name: String = "Konyha ventilator"
+        override var displayOrder: Int = 630,
+        override var groupName: String = "Konyha",
+        override var mqttName: String = "konyha-ventilator",
+        var scheduledTurnedOn: Boolean = false,
+        override var name: String = "Ventilátor"
     ) : SwitchState()
 
     var state = DeviceState()
@@ -54,6 +56,7 @@ class VentilatorKonyha : AbstractDeviceConfig(), Switch {
             handler = {
                 logger.info("bekapcsolt")
                 state.powerOn = true
+                actionTimeout(VentilatorKonyha::powerOff, minutes(5))
             }
         }
 

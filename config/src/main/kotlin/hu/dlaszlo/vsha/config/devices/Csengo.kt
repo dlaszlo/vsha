@@ -10,9 +10,9 @@ import java.util.Arrays.asList
 class Csengo : AbstractDeviceConfig() {
 
     data class DeviceState(
-            val mqttName1: String = "konyha-rfbridge",
-            val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Csengő"
+        val mqttName1: String = "konyha-rfbridge",
+        val mqttName2: String = "nappali-rfbridge",
+        val name: String = "Csengő"
     )
 
     var state = DeviceState()

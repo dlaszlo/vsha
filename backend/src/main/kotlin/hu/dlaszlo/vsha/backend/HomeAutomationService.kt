@@ -100,9 +100,7 @@ class HomeAutomationService : Runnable {
                                         if (device is Switch) {
                                             subscriptionResolver.updateDeviceInfo(
                                                 device.device.deviceId,
-                                                device.switchState.name,
-                                                device.switchState.online,
-                                                device.switchState.powerOn
+                                                device.switchState
                                             )
                                         }
                                     }
@@ -123,9 +121,7 @@ class HomeAutomationService : Runnable {
                                     if (device is Switch) {
                                         subscriptionResolver.updateDeviceInfo(
                                             device.device.deviceId,
-                                            device.switchState.name,
-                                            device.switchState.online,
-                                            device.switchState.powerOn
+                                            device.switchState
                                         )
                                     }
                                 }

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class RfBridgeKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
-            val mqttName: String = "konyha-rfbridge",
-            val name: String = "Konyha RF-bridge",
-            var online: Boolean = false
+        val mqttName: String = "konyha-rfbridge",
+        val name: String = "Konyha RF-bridge",
+        var online: Boolean = false
     )
 
     var state = DeviceState()

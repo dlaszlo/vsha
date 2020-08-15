@@ -9,9 +9,9 @@ import java.util.Arrays.asList
 class ErzekeloMozgasKonyha : AbstractDeviceConfig() {
 
     data class DeviceState(
-            val mqttName1: String = "konyha-rfbridge",
-            val mqttName2: String = "nappali-rfbridge",
-            val name: String = "Konyha mozgásérzékelő"
+        val mqttName1: String = "konyha-rfbridge",
+        val mqttName2: String = "nappali-rfbridge",
+        val name: String = "Mozgásérzékelő"
     )
 
     val state = DeviceState()

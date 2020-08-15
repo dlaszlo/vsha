@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component
 class KonnektorNappali : AbstractDeviceConfig(), Switch {
 
     data class DeviceState(
-            val mqttName: String = "nappali-konnektor",
-            override var name: String = "Nappali konnektor"
+        override var displayOrder: Int = 110,
+        override var groupName: String = "Nappali",
+        override var mqttName: String = "nappali-konnektor",
+        override var name: String = "Állólámpa"
     ) : SwitchState()
 
     var state = DeviceState()

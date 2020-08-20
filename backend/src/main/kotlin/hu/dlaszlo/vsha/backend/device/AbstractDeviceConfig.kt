@@ -1,5 +1,6 @@
 package hu.dlaszlo.vsha.backend.device
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.backend.graphql.SubscriptionResolver
@@ -36,6 +37,9 @@ abstract class AbstractDeviceConfig {
 
     @Autowired
     lateinit var subscriptions: SubscriptionResolver
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     abstract var device: Device
 

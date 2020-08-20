@@ -1,5 +1,10 @@
 package hu.dlaszlo.vsha.backend
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import graphql.kickstart.servlet.apollo.ApolloScalars
 import graphql.scalars.ExtendedScalars
 import graphql.schema.GraphQLScalarType
@@ -120,6 +125,16 @@ class BackendConfiguration {
     @Bean
     fun mqttOutboundChannel(): MessageChannel {
         return DirectChannel()
+    }
+
+    @Bean
+    fun objectMapper(): ObjectMapper {
+        val mapper = ObjectMapper()
+        mapper.registerModule(Jdk8Module())
+        mapper.registerModule(JavaTimeModule())
+        mapper.registerModule(KotlinModule())
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        return mapper
     }
 
     @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")

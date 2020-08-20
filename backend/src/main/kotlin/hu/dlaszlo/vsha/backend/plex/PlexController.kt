@@ -1,6 +1,8 @@
 package hu.dlaszlo.vsha.backend.plex
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import hu.dlaszlo.vsha.backend.mqtt.MqttService
+import hu.dlaszlo.vsha.backend.plex.model.Event
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,12 +17,19 @@ class PlexController {
     @Autowired
     lateinit var mqttService: MqttService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     @PostMapping(value = ["/webhook"])
     @ResponseStatus(value = HttpStatus.OK)
     fun webhook(request: MultipartHttpServletRequest, @RequestParam("files") files: Array<MultipartFile?>) {
         val payload: String = request.getParameter("payload")
-        logger.info("Plex event: {}", payload)
-        mqttService.publish("plex/webhook", payload, false)
+        val event: Event? = objectMapper.readValue(payload, Event::class.java)
+        logger.info("Plex event: {}", event)
+        if (event != null) {
+            val mqttMessage = objectMapper.writeValueAsString(event)
+            mqttService.publish("plex/webhook", mqttMessage, false)
+        }
     }
 
     companion object {

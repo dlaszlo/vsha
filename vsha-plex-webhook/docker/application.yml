@@ -1,0 +1,9 @@
+mqtt:
+  qos: 0
+  broker: tcp://mosquitto:1883
+  clientId: HomeAutomation
+  username: xxx
+  password: xxx
+  keepAliveInterval: 30
+  completionTimeout: 30000
+  recoveryInterval: 10000

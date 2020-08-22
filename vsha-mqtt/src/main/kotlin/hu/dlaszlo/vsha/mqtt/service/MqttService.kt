@@ -1,6 +1,6 @@
-package hu.dlaszlo.vsha.backend.mqtt
+package hu.dlaszlo.vsha.mqtt.service
 
-import hu.dlaszlo.vsha.backend.BackendConfiguration
+import hu.dlaszlo.vsha.mqtt.MqttConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -9,7 +9,7 @@ import org.springframework.integration.mqtt.support.MqttHeaders
 import org.springframework.messaging.Message
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentLinkedQueue
-import hu.dlaszlo.vsha.backend.mqtt.Message as MqttMessage
+import hu.dlaszlo.vsha.mqtt.model.Message as MqttMessage
 
 @Component
 class MqttService {
@@ -20,7 +20,7 @@ class MqttService {
     val queue: ConcurrentLinkedQueue<MqttMessage> = ConcurrentLinkedQueue()
 
     @Autowired
-    lateinit var gateway: BackendConfiguration.MqttGateway
+    lateinit var gateway: MqttConfiguration.MqttGateway
 
     fun publish(topic: String, payload: String, retained: Boolean) {
         gateway.send(topic, retained, qos, payload)
@@ -38,7 +38,7 @@ class MqttService {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(BackendConfiguration::class.java)!!
+        val logger = LoggerFactory.getLogger(MqttConfiguration::class.java)!!
     }
 
 }

@@ -1,4 +1,4 @@
-package hu.dlaszlo.vsha.backend.mqtt
+package hu.dlaszlo.vsha.mqtt.model
 
 data class Message(
     var topic: String,

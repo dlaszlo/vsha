@@ -3,7 +3,7 @@ package hu.dlaszlo.vsha.config.devices
 import com.fasterxml.jackson.core.JsonParseException
 import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.backend.device.Device
-import hu.dlaszlo.vsha.backend.plex.model.Event
+import hu.dlaszlo.vsha.plex.model.Event
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

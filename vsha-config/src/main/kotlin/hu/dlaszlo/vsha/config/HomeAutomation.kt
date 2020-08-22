@@ -1,7 +1,7 @@
 package hu.dlaszlo.vsha.config
 
 import hu.dlaszlo.vsha.backend.BackendConfiguration
-import hu.dlaszlo.vsha.backend.HomeAutomationService
+import hu.dlaszlo.vsha.backend.service.HomeAutomationService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder

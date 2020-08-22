@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import hu.dlaszlo.vsha.backend.graphql.SubscriptionResolver
-import hu.dlaszlo.vsha.backend.mqtt.MqttService
+
 import hu.dlaszlo.vsha.backend.sunsetsunrise.SunsetSunriseService
 import hu.dlaszlo.vsha.backend.telegram.TelegramService
+import hu.dlaszlo.vsha.mqtt.service.MqttService
 import org.influxdb.InfluxDB
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext

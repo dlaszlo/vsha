@@ -1,4 +1,4 @@
-package hu.dlaszlo.vsha.backend
+package hu.dlaszlo.vsha.backend.service
 
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
@@ -6,7 +6,7 @@ import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.backend.device.BeeperService
 import hu.dlaszlo.vsha.backend.device.Switch
 import hu.dlaszlo.vsha.backend.graphql.SubscriptionResolver
-import hu.dlaszlo.vsha.backend.mqtt.MqttService
+import hu.dlaszlo.vsha.mqtt.service.MqttService
 import org.influxdb.InfluxDB
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

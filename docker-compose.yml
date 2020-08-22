@@ -25,6 +25,20 @@ services:
       - TELEGRAM_BOTTOKEN=${TELEGRAM_BOTTOKEN}
       - TELEGRAM_CHATID=${TELEGRAM_CHATID}
 
+  plex-webhook:
+    container_name: plex-webhook
+    build: vsha-plex-webhook
+    restart: always
+    volumes:
+      - "/sys:/sys"
+      - "/storage/plex-webhook/log:/var/log/plex-webhook"
+    depends_on:
+      - mosquitto
+    environment:
+      - TZ=Europe/Budapest
+      - MQTT_USERNAME=${MQTT_USERNAME}
+      - MQTT_PASSWORD=${MQTT_PASSWORD}
+
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto
@@ -72,6 +86,7 @@ services:
     depends_on:
       - grafana
       - homeautomation
+      - plex-webhook
 
   plex:
     container_name: plex

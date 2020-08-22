@@ -1,5 +1,8 @@
 include "vsha-backend"
+include "vsha-mqtt"
 include "vsha-config"
+include "vsha-plex-model"
+include "vsha-plex-webhook"
 
 rootProject.name = 'vsha'
 

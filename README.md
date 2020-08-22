@@ -63,3 +63,7 @@ telegramService.sendNotification("Riasztás! Vízelfolyás érzékelő (mosogat�
 ## Napkelte, napnyugta szolgáltatás használata
 
 @@@ TODO
+
+## Banner készítő
+
+http://patorjk.com/software/taag/#p=display&f=Small&t=

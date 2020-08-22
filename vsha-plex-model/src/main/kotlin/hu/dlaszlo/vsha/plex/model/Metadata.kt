@@ -1,4 +1,4 @@
-package hu.dlaszlo.vsha.backend.plex.model
+package hu.dlaszlo.vsha.plex.model
 
 data class Metadata(
     val studio: String?,

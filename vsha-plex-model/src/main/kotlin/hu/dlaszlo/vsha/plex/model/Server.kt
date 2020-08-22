@@ -1,4 +1,4 @@
-package hu.dlaszlo.vsha.backend.plex.model
+package hu.dlaszlo.vsha.plex.model
 
 data class Server(
     val title: String? = null,

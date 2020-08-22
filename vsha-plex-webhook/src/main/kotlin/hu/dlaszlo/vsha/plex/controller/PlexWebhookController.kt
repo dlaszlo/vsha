@@ -1,8 +1,8 @@
-package hu.dlaszlo.vsha.backend.plex
+package hu.dlaszlo.vsha.plex.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import hu.dlaszlo.vsha.backend.mqtt.MqttService
-import hu.dlaszlo.vsha.backend.plex.model.Event
+import hu.dlaszlo.vsha.mqtt.service.MqttService
+import hu.dlaszlo.vsha.plex.model.Event
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -11,8 +11,8 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
 @RestController
-@RequestMapping("/plex")
-class PlexController {
+@RequestMapping
+class PlexWebhookController {
 
     @Autowired
     lateinit var mqttService: MqttService
@@ -33,7 +33,7 @@ class PlexController {
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(PlexController::class.java)!!
+        val logger = LoggerFactory.getLogger(PlexWebhookController::class.java)!!
     }
 
 }

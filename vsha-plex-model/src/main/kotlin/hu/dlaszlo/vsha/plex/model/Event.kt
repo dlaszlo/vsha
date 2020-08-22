@@ -1,4 +1,4 @@
-package hu.dlaszlo.vsha.backend.plex.model
+package hu.dlaszlo.vsha.plex.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

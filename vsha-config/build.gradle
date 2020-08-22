@@ -1,0 +1,32 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlin_version"
+    id "org.jetbrains.kotlin.plugin.spring" version "$kotlin_version"
+}
+
+apply plugin: "java-library"
+apply plugin: "kotlin"
+apply plugin: "kotlin-spring"
+apply plugin: "org.springframework.boot"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(":vsha-backend")
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+
+bootJar {
+    archiveFileName = "vsha.jar"
+    mainClassName = "hu.dlaszlo.vsha.config.HomeAutomationKt"
+    exclude "application.yml"
+    exclude "logback.xml"
+}
+

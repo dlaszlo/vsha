@@ -1,5 +1,5 @@
-include "backend"
-include "config"
+include "vsha-backend"
+include "vsha-config"
 
 rootProject.name = 'vsha'
 

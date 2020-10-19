@@ -24,7 +24,9 @@ class ErzekeloMozgasKonyha : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("mozgás észlelve")
-                if (!sunsetSunriseService.isDaylight()) {
+                if (!sunsetSunriseService.isDaylight()
+                    && sunsetSunriseService.isAfter(12, 0)
+                ) {
                     action(KapcsoloKonyhapult::automaticPowerOn)
                 }
             }

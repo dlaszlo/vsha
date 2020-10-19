@@ -120,6 +120,14 @@ class SunsetSunriseService {
         }
     }
 
+    fun isBefore(hours: Int, minutes: Int): Boolean {
+        return LocalTime.now(ZoneId.of(timeZone)).isBefore(LocalTime.of(hours, minutes))
+    }
+
+    fun isAfter(hours: Int, minutes: Int): Boolean {
+        return LocalTime.now(ZoneId.of(timeZone)).isAfter(LocalTime.of(hours, minutes))
+    }
+
     companion object {
         val logger = LoggerFactory.getLogger(SunsetSunriseService::class.java)!!
     }

@@ -3,7 +3,6 @@ package hu.dlaszlo.vsha.config.devices
 import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.util.Arrays.asList
 
 @Component("erzekeloMozgasKonyha")
 class ErzekeloMozgasKonyha : AbstractDeviceConfig() {
@@ -19,7 +18,7 @@ class ErzekeloMozgasKonyha : AbstractDeviceConfig() {
     override var device = device {
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
             payload = "EF78EE"
             jsonPath = "$.RfReceived.Data"
             handler = {

@@ -4,7 +4,6 @@ import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.backend.device.Device
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.util.Arrays.asList
 
 @Component("erzekeloAjtonyitasFolyoso")
 class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
@@ -20,11 +19,13 @@ class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
 
     var lastBeepOpen = 0L
     var lastBeepClose = 0L
+    var lastMessage = 0L
+    var alert = false
 
     override var device: Device = device {
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
             payload = "D12E0A"
             jsonPath = "$.RfReceived.Data"
             handler = {
@@ -32,13 +33,14 @@ class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
                 state.doorOpened = true
                 if (currentTime() - lastBeepOpen > seconds(3)) {
                     lastBeepOpen = currentTime()
+                    actionTimeout(ErzekeloAjtonyitasFolyoso::sendMessage, seconds(45))
                     beeperService.beep(100, 50, 100, 50, 100, 50, 100)
                 }
             }
         }
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
             payload = "D12E0E"
             jsonPath = "$.RfReceived.Data"
             handler = {
@@ -46,11 +48,26 @@ class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
                 state.doorOpened = false
                 if (currentTime() - lastBeepClose > seconds(3)) {
                     lastBeepClose = currentTime()
+                    clearTimeout(ErzekeloAjtonyitasFolyoso::sendMessage)
+                    if (alert) {
+                        alert = false
+                        telegramService.sendNotification("A folyosó felőli bejárati ajtó becsukva.")
+                    }
                     beeperService.beep(200, 50, 200)
                 }
             }
         }
 
+    }
+
+    fun sendMessage(): Boolean {
+        if (currentTime() - lastMessage > minutes(1)) {
+            logger.info("Üzenet küldése")
+            lastMessage = currentTime()
+            alert = true
+            telegramService.sendNotification("Riasztás! A folyosó felőli bejárati ajtó nyitva maradt.")
+        }
+        return true
     }
 
     companion object {

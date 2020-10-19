@@ -17,7 +17,7 @@ class Csengo : AbstractDeviceConfig() {
 
     var state = DeviceState()
 
-    var lastSms = 0L
+    var lastMessage = 0L
 
     override var device: Device = device {
 
@@ -27,15 +27,15 @@ class Csengo : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Csengetett valaki.")
-                action(Csengo::sendSms)
+                action(Csengo::sendMessage)
             }
         }
     }
 
-    fun sendSms(): Boolean {
-        if (currentTime() - lastSms > minutes(1)) {
-            logger.info("SMS küldése")
-            lastSms = currentTime()
+    fun sendMessage(): Boolean {
+        if (currentTime() - lastMessage > minutes(1)) {
+            logger.info("Üzenet küldése")
+            lastMessage = currentTime()
             telegramService.sendNotification("Csengetett valaki.")
         }
         return true

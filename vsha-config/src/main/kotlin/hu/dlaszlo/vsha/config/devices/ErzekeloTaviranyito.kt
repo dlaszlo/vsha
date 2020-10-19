@@ -4,7 +4,6 @@ import hu.dlaszlo.vsha.backend.device.AbstractDeviceConfig
 import hu.dlaszlo.vsha.backend.device.Device
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.util.Arrays.asList
 
 @Component("erzekeloTaviranyito")
 class ErzekeloTaviranyito : AbstractDeviceConfig() {
@@ -23,8 +22,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
     override var device: Device = device {
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
-            payloadList = asList("195941", "888881", "94AB61")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            payloadList = listOf("195941", "888881", "94AB61")
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Lámpák kikapcsolása")
@@ -47,8 +46,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
-            payloadList = asList("195942", "888882", "94AB62")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            payloadList = listOf("195942", "888882", "94AB62")
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("Nappali állólámpa bekapcsolása")
@@ -59,8 +58,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
-            payloadList = asList("195944", "888884", "94AB64")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            payloadList = listOf("195944", "888884", "94AB64")
             jsonPath = "$.RfReceived.Data"
             handler = {
                 if (currentTime() - lastToggle1 >= seconds(1)) {
@@ -72,8 +71,8 @@ class ErzekeloTaviranyito : AbstractDeviceConfig() {
         }
 
         subscribe {
-            topicList = asList("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
-            payloadList = asList("195948", "888888", "94AB68")
+            topicList = listOf("tele/${state.mqttName1}/RESULT", "tele/${state.mqttName2}/RESULT")
+            payloadList = listOf("195948", "888888", "94AB68")
             jsonPath = "$.RfReceived.Data"
             handler = {
                 if (currentTime() - lastToggle2 >= seconds(1)) {

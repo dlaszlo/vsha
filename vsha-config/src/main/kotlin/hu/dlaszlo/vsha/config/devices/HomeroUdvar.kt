@@ -23,10 +23,10 @@ class HomeroUdvar : AbstractDeviceConfig() {
             handler = { payload ->
                 logger.info(payload)
 
-                val pressure: Double = jsonValue(payload, "$.pressure")!!
-                val temperature: Double = jsonValue(payload, "$.temperature")!!
-                val humidity: Double = jsonValue(payload, "$.humidity")!!
-                val altitude: Double = jsonValue(payload, "$.altitude")!!
+                val pressure: Double = jsonValue(payload, "$.pressure", 0.0)!!
+                val temperature: Double = jsonValue(payload, "$.temperature", 0.0)!!
+                val humidity: Double = jsonValue(payload, "$.humidity", 0.0)!!
+                val altitude: Double = jsonValue(payload, "$.altitude", 0.0)!!
 
                 influxDB.write(
                     Point.measurement("tempsens1")

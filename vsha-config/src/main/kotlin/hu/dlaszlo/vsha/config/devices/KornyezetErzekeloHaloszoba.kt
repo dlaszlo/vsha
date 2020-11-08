@@ -23,24 +23,24 @@ class KornyezetErzekeloHaloszoba : AbstractDeviceConfig() {
             handler = { payload ->
                 logger.info(payload)
 
-                val pressure: Double = jsonValue(payload, "$.pressure")!!
-                val gasResistance: Double = jsonValue(payload, "$.gasResistance")!!
-                val iaq: Double = jsonValue(payload, "$.iaq")!!
-                val iaqAccuracy: Int = jsonValue(payload, "$.iaqAccuracy")!!
-                val temperature: Double = jsonValue(payload, "$.temperature")!!
-                val humidity: Double = jsonValue(payload, "$.humidity")!!
+                val pressure: Double = jsonValue(payload, "$.pressure", 0.0)!!
+                val gasResistance: Double = jsonValue(payload, "$.gasResistance", 0.0)!!
+                val iaq: Double = jsonValue(payload, "$.iaq", 0.0)!!
+                val iaqAccuracy: Int = jsonValue(payload, "$.iaqAccuracy", 0)!!
+                val temperature: Double = jsonValue(payload, "$.temperature", 0.0)!!
+                val humidity: Double = jsonValue(payload, "$.humidity", 0.0)!!
                 val dewPointTemperature = calculateDewPoint(humidity, temperature)
-                val breathVocEquivalent: Double = jsonValue(payload, "$.breathVocEquivalent")!!
-                val breathVocAccuracy: Int = jsonValue(payload, "$.breathVocAccuracy")!!
-                val co2Equivalent: Double = jsonValue(payload, "$.co2Equivalent")!!
-                val co2Accuracy: Int = jsonValue(payload, "$.co2Accuracy")!!
-                val compGasValue: Double = jsonValue(payload, "$.compGasValue")!!
-                val compGasAccuracy: Int = jsonValue(payload, "$.compGasAccuracy")!!
-                val gasPercentage: Double = jsonValue(payload, "$.gasPercentage")!!
-                val gasPercentageAcccuracy: Int = jsonValue(payload, "$.gasPercentageAcccuracy")!!
-                val staticIaq: Double = jsonValue(payload, "$.staticIaq")!!
-                val staticIaqAccuracy: Int = jsonValue(payload, "$.staticIaqAccuracy")!!
-                val stabStatus: Int = jsonValue(payload, "$.stabStatus")!!
+                val breathVocEquivalent: Double = jsonValue(payload, "$.breathVocEquivalent", 0.0)!!
+                val breathVocAccuracy: Int = jsonValue(payload, "$.breathVocAccuracy", 0)!!
+                val co2Equivalent: Double = jsonValue(payload, "$.co2Equivalent", 0.0)!!
+                val co2Accuracy: Int = jsonValue(payload, "$.co2Accuracy", 0)!!
+                val compGasValue: Double = jsonValue(payload, "$.compGasValue", 0.0)!!
+                val compGasAccuracy: Int = jsonValue(payload, "$.compGasAccuracy", 0)!!
+                val gasPercentage: Double = jsonValue(payload, "$.gasPercentage", 0.0)!!
+                val gasPercentageAcccuracy: Int = jsonValue(payload, "$.gasPercentageAcccuracy", 0)!!
+                val staticIaq: Double = jsonValue(payload, "$.staticIaq", 0.0)!!
+                val staticIaqAccuracy: Int = jsonValue(payload, "$.staticIaqAccuracy", 0)!!
+                val stabStatus: Int = jsonValue(payload, "$.stabStatus", 0)!!
 
                 influxDB.write(
                     Point.measurement("ambs3")

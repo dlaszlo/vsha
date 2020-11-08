@@ -60,7 +60,7 @@ abstract class AbstractDeviceConfig {
         subscribeList.add(Subscribe().apply(subscribe))
     }
 
-    inline fun <reified T> jsonValue(payload: String, jsonPath: String): T? {
+    inline fun <reified T> jsonValue(payload: String, jsonPath: String, defaultValue: T? = null): T? {
         var pl: String? = null
         try {
             pl = (JsonPath.parse(payload).read(jsonPath) as Any).toString()
@@ -68,15 +68,15 @@ abstract class AbstractDeviceConfig {
             //
         }
         return when (T::class) {
-            String::class -> pl as T
-            Byte::class -> pl?.toByte() as T
-            Int::class -> pl?.toInt() as T
-            Long::class -> pl?.toLong() as T
-            Float::class -> pl?.toFloat() as T
-            Double::class -> pl?.toDouble() as T
-            BigDecimal::class -> pl?.toBigDecimal() as T
-            BigInteger::class -> pl?.toBigInteger() as T
-            Boolean::class -> pl?.toBoolean() as T
+            String::class -> pl as T ?: defaultValue
+            Byte::class -> pl?.toByte() as T ?: defaultValue
+            Int::class -> pl?.toInt() as T ?: defaultValue
+            Long::class -> pl?.toLong() as T ?: defaultValue
+            Float::class -> pl?.toFloat() as T ?: defaultValue
+            Double::class -> pl?.toDouble() as T ?: defaultValue
+            BigDecimal::class -> pl?.toBigDecimal() as T ?: defaultValue
+            BigInteger::class -> pl?.toBigInteger() as T ?: defaultValue
+            Boolean::class -> pl?.toBoolean() as T ?: defaultValue
             else -> throw Exception("Unhandled return type")
         }
     }

@@ -25,19 +25,19 @@ services:
       - TELEGRAM_BOTTOKEN=${TELEGRAM_BOTTOKEN}
       - TELEGRAM_CHATID=${TELEGRAM_CHATID}
 
-  plex-webhook:
-    container_name: plex-webhook
-    build: vsha-plex-webhook
-    restart: always
-    volumes:
-      - "/sys:/sys"
-      - "/storage/plex-webhook/log:/var/log/plex-webhook"
-    depends_on:
-      - mosquitto
-    environment:
-      - TZ=Europe/Budapest
-      - MQTT_USERNAME=${MQTT_USERNAME}
-      - MQTT_PASSWORD=${MQTT_PASSWORD}
+#  plex-webhook:
+#    container_name: plex-webhook
+#    build: vsha-plex-webhook
+#    restart: always
+#    volumes:
+#      - "/sys:/sys"
+#      - "/storage/plex-webhook/log:/var/log/plex-webhook"
+#    depends_on:
+#      - mosquitto
+#    environment:
+#      - TZ=Europe/Budapest
+#      - MQTT_USERNAME=${MQTT_USERNAME}
+#      - MQTT_PASSWORD=${MQTT_PASSWORD}
 
   mosquitto:
     container_name: mosquitto
@@ -86,29 +86,29 @@ services:
     depends_on:
       - grafana
       - homeautomation
-      - plex-webhook
+#      - plex-webhook
 
-  plex:
-    container_name: plex
-    image: linuxserver/plex
-    restart: unless-stopped
-    volumes:
-      - "/storage/plex:/config"
-      - "/storage/samba/plex:/tv"
-      - "/storage/samba/plex:/movies"
-    ports:
-      - "32400:32400"
-      - "1900:1900/udp"
-      - "3005:3005"
-      - "8324:8324"
-      - "32410:32410/udp"
-      - "32412:32412/udp"
-      - "32413:32413/udp"
-      - "32414:32414/udp"
-      - "32469:32469"
-    environment:
-      - PUID=1001
-      - PGID=1001
-      - VERSION=docker
-      - UMASK_SET=022
-      - PLEX_CLAIM=${PLEX_CLAIM}
+#  plex:
+#    container_name: plex
+#    image: linuxserver/plex
+#    restart: unless-stopped
+#    volumes:
+#      - "/storage/plex:/config"
+#      - "/storage/samba/plex:/tv"
+#      - "/storage/samba/plex:/movies"
+#    ports:
+#      - "32400:32400"
+#      - "1900:1900/udp"
+#      - "3005:3005"
+#      - "8324:8324"
+#      - "32410:32410/udp"
+#      - "32412:32412/udp"
+#      - "32413:32413/udp"
+#      - "32414:32414/udp"
+#      - "32469:32469"
+#    environment:
+#      - PUID=1001
+#      - PGID=1001
+#      - VERSION=docker
+#      - UMASK_SET=022
+#      - PLEX_CLAIM=${PLEX_CLAIM}

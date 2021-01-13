@@ -23,7 +23,8 @@ class ErzekeloMozgasFolyoso : AbstractDeviceConfig() {
             jsonPath = "$.RfReceived.Data"
             handler = {
                 logger.info("mozgás észlelve")
-                if (!sunsetSunriseService.isDaylight()) {
+                if (!sunsetSunriseService.isDaylight()
+                    && (sunsetSunriseService.isBefore(6, 0) || sunsetSunriseService.isAfter(12, 0))) {
                     action(KapcsoloFolyoso::automaticPowerOn)
                 }
             }

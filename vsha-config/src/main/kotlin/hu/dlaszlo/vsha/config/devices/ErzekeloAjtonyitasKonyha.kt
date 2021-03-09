@@ -33,7 +33,7 @@ class ErzekeloAjtonyitasKonyha : AbstractDeviceConfig() {
                 state.doorOpened = true
                 if (currentTime() - lastBeepOpen > seconds(3)) {
                     lastBeepOpen = currentTime()
-                    actionTimeout(ErzekeloAjtonyitasKonyha::sendMessage, seconds(45))
+                    actionTimeout(ErzekeloAjtonyitasKonyha::sendMessage, minutes(5))
                     beeperService.beep(100, 50, 100, 50, 100, 50, 100)
                 }
             }

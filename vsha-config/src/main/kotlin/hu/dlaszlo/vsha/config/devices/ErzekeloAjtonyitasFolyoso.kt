@@ -33,7 +33,7 @@ class ErzekeloAjtonyitasFolyoso : AbstractDeviceConfig() {
                 state.doorOpened = true
                 if (currentTime() - lastBeepOpen > seconds(3)) {
                     lastBeepOpen = currentTime()
-                    actionTimeout(ErzekeloAjtonyitasFolyoso::sendMessage, seconds(45))
+                    actionTimeout(ErzekeloAjtonyitasFolyoso::sendMessage, minutes(5))
                     beeperService.beep(100, 50, 100, 50, 100, 50, 100)
                 }
             }

@@ -16,7 +16,3 @@ ENTRYPOINT ["java", \
             "-Dlog.directory=/var/log/homeautomation", \
             "-jar", "/vsha.jar" \
 ]
-
-HEALTHCHECK --start-period=15s --interval=1m --timeout=10s --retries=5 \
-            CMD curl --silent --fail --request GET http://localhost/actuator/health \
-                | jq --exit-status '.status == "UP"' || exit 1

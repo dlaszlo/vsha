@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 services:
 
   homeautomation:
@@ -24,6 +24,12 @@ services:
       - SUNSETSUNRISE_TIMEZONE=${SUNSETSUNRISE_TIMEZONE}
       - TELEGRAM_BOTTOKEN=${TELEGRAM_BOTTOKEN}
       - TELEGRAM_CHATID=${TELEGRAM_CHATID}
+    healthcheck:
+      test: curl -m 5 --silent --fail --request GET http://localhost:8080/actuator/health | jq --exit-status -n 'inputs | if has("status") then .status=="UP" else false end' > /dev/null || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   plex-webhook:
     container_name: plex-webhook
@@ -38,6 +44,12 @@ services:
       - TZ=Europe/Budapest
       - MQTT_USERNAME=${MQTT_USERNAME}
       - MQTT_PASSWORD=${MQTT_PASSWORD}
+    healthcheck:
+      test: curl -m 5 --silent --fail --request GET http://localhost:8080/actuator/health | jq --exit-status -n 'inputs | if has("status") then .status=="UP" else false end' > /dev/null || exit 1
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   mosquitto:
     container_name: mosquitto
@@ -86,29 +98,29 @@ services:
     depends_on:
       - grafana
       - homeautomation
-      - plex-webhook
+  #    - plex-webhook
 
-  plex:
-    container_name: plex
-    image: linuxserver/plex
-    restart: unless-stopped
-    volumes:
-      - "/storage/plex:/config"
-      - "/storage/samba/plex:/tv"
-      - "/storage/samba/plex:/movies"
-    ports:
-      - "32400:32400"
-      - "1900:1900/udp"
-      - "3005:3005"
-      - "8324:8324"
-      - "32410:32410/udp"
-      - "32412:32412/udp"
-      - "32413:32413/udp"
-      - "32414:32414/udp"
-      - "32469:32469"
-    environment:
-      - PUID=1001
-      - PGID=1001
-      - VERSION=docker
-      - UMASK_SET=022
-      - PLEX_CLAIM=${PLEX_CLAIM}
+  # plex:
+  #   container_name: plex
+  #   image: linuxserver/plex
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "/storage/plex:/config"
+  #     - "/storage/samba/plex:/tv"
+  #     - "/storage/samba/plex:/movies"
+  #   ports:
+  #     - "32400:32400"
+  #     - "1900:1900/udp"
+  #     - "3005:3005"
+  #     - "8324:8324"
+  #     - "32410:32410/udp"
+  #     - "32412:32412/udp"
+  #     - "32413:32413/udp"
+  #     - "32414:32414/udp"
+  #     - "32469:32469"
+  #   environment:
+  #     - PUID=1001
+  #     - PGID=1001
+  #     - VERSION=docker
+  #     - UMASK_SET=022
+  #     - PLEX_CLAIM=${PLEX_CLAIM}

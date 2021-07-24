@@ -48,10 +48,8 @@ Beállítások elvégzése az üzenetküldéshez:
 2. Bot létrehozáskor a BotFather a bot nevét, és a userId-jét fogja megkérdezni.
 3. A HTTP API-hoz kapott tokent az ```application.yml```-ben kell beállítani a ```telegram.botToken``` beállításban.
 4. Létre kell hozni egy private channelt, és meg kell hívni bele a bot-ot admin-ként, és a felhasználókat.
-5. A channel-t meg kell nyitni egy webböngészőben, és az channel_id-t az URL-ből kell kinyerni:
-    1. Pl. ez az URL: https://web.telegram.org/#/im?p=c1234567890_1234567890123456789
-    2. Ekkor a channel ID a c és a _ jel közötti rész, de elé kell írni, hogy -100, tehát ez lesz: -1001234567890 
-    3. Tehát a channel ID egy - jel, és 13 db szám.
+5. A böngészőben a következő URL-el tudod lekérdezni a channel ID-t (a ${botTokent} palceholdert ki kell cserélned):
+   https://api.telegram.org/bot${botToken}/getUpdates
     4. A kapott channel ID-t az ```application.yml```-ben kell beállítani, a ```telegram.chatId``` beállításban.
 
 Példa az üzenetküldésre:
@@ -60,10 +58,37 @@ Példa az üzenetküldésre:
 telegramService.sendNotification("Riasztás! Vízelfolyás érzékelő (mosogatógép).")
 ```
 
-## Napkelte, napnyugta szolgáltatás használata
+## A frontend-hez a csomagok telepítése, fordítás
+```
+cd vsha-frontend
+rm -rf node-modules
+npm install --ignore-scripts
+npm run build
+cd ..
+```
 
-@@@ TODO
+## Kapcsolódás távoli docker-hez
 
-## Banner készítő
+- A szerver és a kliens gépre is telepíteni kell a dockert.
+- TLS kulcsokat kell generálni a következő cikk szerint: 
+  https://docs.docker.com/engine/security/protect-access/
+  A kulcsokat be kell állítani szerver és kliens oldalon is.
+- Kliens oldalon docker context-et érdemes készíten, példa:
+```
+$ docker context create my-context --description "some description" --docker "host=tcp://myserver:2376,ca=~/ca-file,cert=~/cert-file,key=~/key-file"
+```
+- A docker konténerek build-eléséhez be kell lépni a docker context-be:
+```
+$ docker context use my-context
+```
+- Indítás:
+```
+$ docker-compose up -d
+```
+- Kilépés a context-ből:
+```
+$ docker context use default
+```
 
-http://patorjk.com/software/taag/#p=display&f=Small&t=
+##  Beállítások
+A beállításokat a .env file-ban kell megadni. Lásd: env.template
